@@ -15,5 +15,4 @@ public class IndexController {
 	public Index hello() {
 		return new Index("Mensagem", "Teste");
 	}
-	
 }

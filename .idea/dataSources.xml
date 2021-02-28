@@ -4,8 +4,9 @@
     <data-source source="LOCAL" name="MySQL - brazukas@10.211.55.16" uuid="ef894f35-a36c-4174-9bcd-e2cb76a65bcf">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
       <remarks>Connection</remarks>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://10.211.55.16:3306/brazukas</jdbc-url>
     </data-source>
   </component>

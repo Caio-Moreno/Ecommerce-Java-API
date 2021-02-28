@@ -39,7 +39,7 @@ public class ConexaoDb {
             return connection;
         else {
             try {
-                Class.forName("com.mysql.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection(_connectionString, _username, _password);
                 gravaLog("Conectou", "ConexaoDb", Level.INFO);
 
@@ -47,9 +47,12 @@ public class ConexaoDb {
                gravaLog("Erro na conexão"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
 
             } catch (SQLException e) {
-
+                gravaLog("Erro na SQLException"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
             } catch (IOException e) {
-                e.printStackTrace();
+                gravaLog("Erro na IOException"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
+            }
+            catch (Exception e){
+                gravaLog("Erro na Exception"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
             }
             return connection;
         }

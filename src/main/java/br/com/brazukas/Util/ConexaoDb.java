@@ -19,18 +19,16 @@ public class ConexaoDb {
     private static final Logger meuLog = Logger.getLogger( ConexaoDb.class.getName() );
 
     private static Connection connection = null;
-    private static String _connectionString;
-    private static String _username;
-    private static String _password;
+    private static String _connectionString = "jdbc:mysql://10.211.55.16:3306/brazukas?useTimezone=true&serverTimezone=UTC&useSSL=false";
+    private static String _username ="cmoreno";
+    private static String _password = "Theblunt15.02";
 
     public ConexaoDb() throws IOException {
-        Properties prop = getProp();
 
 
 
-        _connectionString = prop.getProperty("prop.connectionString");
-        _username = prop.getProperty("prop.username");
-        _password = prop.getProperty("prop.password");
+
+
         gravaLog("Conexão -->" + _connectionString, "ConexaoDb", Level.INFO);
     }
 
@@ -39,15 +37,18 @@ public class ConexaoDb {
             return connection;
         else {
             try {
+                //DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+                //Class.forName("com.mysql.jdbc.Driver");
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection(_connectionString, _username, _password);
                 gravaLog("Conectou", "ConexaoDb", Level.INFO);
 
-            } catch (ClassNotFoundException e) {
-               gravaLog("Erro na conexão"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
+            }// catch (ClassNotFoundException e) {
+               //gravaLog("Erro na conexão"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
 
-            } catch (SQLException e) {
-                gravaLog("Erro na SQLException"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
+            //} 
+        	catch (SQLException e) {
+                gravaLog("Erro na SQLException->"+ e.getMessage() + "SQL STATE -->"+e.getSQLState()+ "CAUSA"+e.getCause(), "ConexaoDb", Level.SEVERE);
             } catch (IOException e) {
                 gravaLog("Erro na IOException"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
             }

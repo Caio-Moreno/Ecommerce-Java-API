@@ -18,8 +18,8 @@ public class IndexController {
 	public Index hello() throws IOException {
 
 		ConexaoDb conexao = new ConexaoDb();
+		ConexaoDb.getConnection();
 
-		System.out.println("Na classe IndexController");
 
 		return new Index("Mensagem", "Teste");
 	}

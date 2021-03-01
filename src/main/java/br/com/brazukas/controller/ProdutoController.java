@@ -30,7 +30,7 @@ public class ProdutoController {
     }
 
     @RequestMapping(params = {"Nome"})
-    public List<Produto> ListaProdutoPorNome(String Nome, String Categoria) throws IOException, SQLException {
+    public List<Produto> ListaProdutoPorNome(String Nome) throws IOException, SQLException {
         //gravaLog("Nome-->"+Nome+"Categoria-->"+Categoria,"PRINCIPALLLLL", Level.SEVERE);
 
         List<Produto> lista = ProdutoDAO.consultaProdutoPorNome(Nome);

@@ -4,26 +4,37 @@ import br.com.brazukas.DAO.ProdutoDAO;
 import br.com.brazukas.Models.Produto;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
 @RestController
+@RequestMapping("/Produtos")
 public class ProdutoController {
 
-    @RequestMapping(path = "/Produtos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Produto> ListaProdutos() throws IOException, SQLException {
+    private String nome;
 
-        return ProdutoDAO.consultarProduto();
+    @RequestMapping(method = RequestMethod.GET)
+    public List<Produto> ListaProdutos(@PathVariable String nome) throws IOException, SQLException {
 
+        gravaLog("nome->>"+nome, "padrao", Level.INFO);
+        List<Produto> lista = ProdutoDAO.consultarProduto();
+
+        return  lista;
+    }
+
+    @RequestMapping(params = {"Nome"})
+    public List<Produto> ListaProdutoPorNome(String Nome, String Categoria) throws IOException, SQLException {
+        //gravaLog("Nome-->"+Nome+"Categoria-->"+Categoria,"PRINCIPALLLLL", Level.SEVERE);
+
+        List<Produto> lista = ProdutoDAO.consultaProdutoPorNome(Nome);
+        return  lista;
     }
 
 }

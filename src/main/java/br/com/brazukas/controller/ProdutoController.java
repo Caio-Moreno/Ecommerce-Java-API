@@ -1,19 +1,18 @@
 package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.ProdutoDAO;
+import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/Produtos")
 public class ProdutoController {
@@ -21,10 +20,10 @@ public class ProdutoController {
     private String nome;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Produto> ListaProdutos() throws IOException, SQLException {
+    public List<ProdutoDto> ListaProdutos() throws IOException, SQLException {
 
         gravaLog("nome->>"+nome, "padrao", Level.INFO);
-        List<Produto> lista = ProdutoDAO.consultarProduto();
+        List<ProdutoDto> lista = ProdutoDAO.consultarProduto();
 
         return  lista;
     }
@@ -36,5 +35,7 @@ public class ProdutoController {
         List<Produto> lista = ProdutoDAO.consultaProdutoPorNome(Nome);
         return  lista;
     }
+
+
 
 }

@@ -3,12 +3,14 @@ package br.com.brazukas.Models;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
 @Getter
 @Setter
+@ToString
 public class Produto {
 	private int _idProduto;
 	private String _nomeProduto;
@@ -30,19 +32,5 @@ public class Produto {
 		this._qtdEstoque = _qtdEstoque;
 		this._preço = _preço;
 		this._imagem = imagem;
-	}
-
-	@Override
-	public String toString() {
-		return "Produto{" +
-				"_idProduto=" + _idProduto +
-				", _nomeProduto='" + _nomeProduto + '\'' +
-				", _nomeExtenso='" + _nomeExtenso + '\'' +
-				", _qualidadeProduto=" + _qualidadeProduto +
-				", _categoria='" + _categoria + '\'' +
-				", _statusProduto='" + _statusProduto + '\'' +
-				", _qtdEstoque=" + _qtdEstoque +
-				", _preço=" + _preço +
-				'}';
 	}
 }

@@ -21,7 +21,7 @@ public class ProdutoController {
     private String nome;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Produto> ListaProdutos(@PathVariable String nome) throws IOException, SQLException {
+    public List<Produto> ListaProdutos() throws IOException, SQLException {
 
         gravaLog("nome->>"+nome, "padrao", Level.INFO);
         List<Produto> lista = ProdutoDAO.consultarProduto();

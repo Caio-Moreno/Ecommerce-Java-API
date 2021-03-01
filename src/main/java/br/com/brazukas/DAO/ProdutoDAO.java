@@ -1,5 +1,6 @@
 package br.com.brazukas.DAO;
 
+import br.com.brazukas.Models.Imagem;
 import br.com.brazukas.Models.Produto;
 import br.com.brazukas.Util.ConexaoDb;
 
@@ -18,7 +19,6 @@ public class ProdutoDAO {
 
     public static List<Produto> consultarProduto() throws SQLException, IOException {
         List <Produto> listaProdutos =  new ArrayList<>();
-
         gravaLog("Consulta produto", "ProdutoDAO",Level.INFO);
 
         String sqlConsulta = "SELECT * FROM produto;";
@@ -40,7 +40,12 @@ public class ProdutoDAO {
                 String statusProduto = rs.getString("statusProduto");
                 int qtdEstoque = rs.getInt("qtdEstoque");
                 double preco = rs.getDouble("preco");
-                listaProdutos.add(new Produto(codProduto,nome,tipo, qualidade,categoria,statusProduto,qtdEstoque,preco));
+                String imagem1 = rs.getString("imagem1");
+                String imagem2 = rs.getString("imagem2");
+                String imagem3 = rs.getString("imagem3");
+                String imagem4 = rs.getString("imagem4");
+
+                listaProdutos.add(new Produto(codProduto,nome,tipo, qualidade,categoria,statusProduto,qtdEstoque,preco,new Imagem(imagem1,imagem2,imagem3,imagem4)));
                 for (Produto prod : listaProdutos) {
                     gravaLog("Abrindo produto","ProdutoDAO", Level.WARNING);
                     gravaLog(""+prod,"ProdutoDAO", Level.WARNING);
@@ -55,6 +60,7 @@ public class ProdutoDAO {
 
     public static List<Produto> consultaProdutoPorNome(String nomeProduto) throws IOException {
         List <Produto> listaProdutos =  new ArrayList<>();
+        
 
         gravaLog("Consulta produto por nome"+nomeProduto, "ProdutoDAO",Level.INFO);
 
@@ -78,7 +84,12 @@ public class ProdutoDAO {
                 String statusProduto = rs.getString("statusProduto");
                 int qtdEstoque = rs.getInt("qtdEstoque");
                 double preco = rs.getDouble("preco");
-                listaProdutos.add(new Produto(codProduto,nome,tipo, qualidade,categoria,statusProduto,qtdEstoque,preco));
+                String imagem1 = rs.getString("imagem1");
+                String imagem2 = rs.getString("imagem2");
+                String imagem3 = rs.getString("imagem3");
+                String imagem4 = rs.getString("imagem4");
+
+                listaProdutos.add(new Produto(codProduto,nome,tipo, qualidade,categoria,statusProduto,qtdEstoque,preco,new Imagem(imagem1,imagem2,imagem3,imagem4)));
                 for (Produto prod : listaProdutos) {
                     gravaLog("Abrindo produto","ProdutoDAO", Level.WARNING);
                     gravaLog(""+prod,"ProdutoDAO", Level.WARNING);

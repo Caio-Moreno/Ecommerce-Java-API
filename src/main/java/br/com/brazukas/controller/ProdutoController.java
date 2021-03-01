@@ -19,9 +19,9 @@ import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 @RestController
 public class ProdutoController {
 
-    @RequestMapping(path = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/Produtos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Produto> ListaProdutos() throws IOException, SQLException {
-        gravaLog("Testando","ProdutoCOntroller", Level.INFO);
+
         return ProdutoDAO.consultarProduto();
 
     }

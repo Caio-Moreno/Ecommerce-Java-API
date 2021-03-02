@@ -99,33 +99,40 @@ public class ProdutoDAO {
         }
         return listaProdutos;
     }
-/*
-    public static void inserirProduto(produto produto) throws SQLException, IOException {
+
+    public static void inserirProduto(Produto produto) throws SQLException, IOException {
         gravaLog("Inserir produto", "ProdutoDAO", Level.WARNING);
-        String sqlInsert = "insert into PRODUTO(ID_PRODUTO,COD_FILIAL,NOME,TIPO,VALOR_COMPRA,VALOR_VENDA,PATH) values(DEFAULT,?,?,?,?,?,?)";
-        String sqlInsertEstoque = "insert into ESTOQUE(ID_ESTOQUE,COD_PRODUTO_FK,QUANTIDADE) values(DEFAULT,LAST_INSERT_ID(),?)";
+        Imagem imagem = produto.get_imagem();
+        String sqlInsert = "INSERT INTO PRODUTO(ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1, IMAGEM2, IMAGEM3, IMAGEM4) VALUES(DEFAULT, ?, ?,?, ?, ?, ?,?,?,?,?,?);";
+        String sqlInsertEstoque = "INSERT INTO ESTOQUE(ID, ID_PRODUTO_FK, QUANTIDADE) VALUES(DEFAULT, LAST_INSERT_ID(), ?);";
 
         try {
-            Connection con = ConexaoDB.getConnection();
+            Connection con = ConexaoDb.getConnection();
             PreparedStatement insertProduto = con.prepareStatement(sqlInsert);
             PreparedStatement insertEstoque = con.prepareStatement(sqlInsertEstoque);
-            insertProduto.setInt(1, produto.get_codFilial());
-            insertProduto.setString(2, produto.get_nome());
-            insertProduto.setString(3, produto.get_tipo());
-            insertProduto.setDouble(4, produto.get_valorCompra());
-            insertProduto.setDouble(5, produto.get_valorVenda());
-            insertProduto.setString(6, produto.get_path());
-            System.out.println("INSERT DO PRODUTO---->"+insertProduto);
-            /*        Insert do estoque
-            insertEstoque.setInt(1, produto.get_quantidade());
-            System.out.println("INSERT DO ESTOQUE---->"+insertEstoque);
+            insertProduto.setString(1, produto.get_nomeProduto());
+            insertProduto.setString(2,produto.get_descricao());
+            insertProduto.setDouble(3,produto.get_qualidadeProduto());
+            insertProduto.setString(4,produto.get_categoria());
+            insertProduto.setString(5,produto.get_statusProduto());
+            insertProduto.setDouble(6,produto.get_preco());
+            insertProduto.setString(7,produto.get_plataforma());
+            insertProduto.setString(8, imagem.getCaminhoImagem1());
+            insertProduto.setString(9,imagem.getCaminhoImagem2());
+            insertProduto.setString(10,imagem.getCaminhoImagem3());
+            insertProduto.setString(11,imagem.getCaminhoImagem4());
+
+            gravaLog("Inserir produto"+insertProduto, "ProdutoDAO", Level.WARNING);
+            /*        Insert do estoque */
+            insertEstoque.setInt(1, produto.get_qtdEstoque());
+            gravaLog("Inserir produto"+insertEstoque, "ProdutoDAO", Level.WARNING);
 
             insertProduto.execute();
             insertEstoque.execute();
 
         }catch (SQLException e) {
-            throw new ServletException(e.getMessage());
+            gravaLog(e.getMessage(), "ProdutoInsertDAO", Level.SEVERE);
         }
-        System.out.println("executei");
-    }*/
+        gravaLog("Finalizado", "ProdutoInsertDAO", Level.WARNING);
+    }
 }

@@ -3,7 +3,10 @@ package br.com.brazukas.controller;
 import br.com.brazukas.DAO.ProdutoDAO;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -11,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
+
 
 @CrossOrigin
 @RestController
@@ -35,11 +39,21 @@ public class ProdutoController {
     }
 
     @RequestMapping(method =  RequestMethod.POST)
-    public String Post(@RequestBody Produto produto)
-    {
+    public String Post(@RequestBody Produto produto) throws IOException, SQLException {
+        boolean error = false;
 
-        
-        return "$produtoNome="+produto.get_nomeProduto()+"$produtoPreco"+produto.get_preco();
+        try {
+            ProdutoDAO.inserirProduto(produto);
+            error = true;
+        }catch (Exception e){
+            gravaLog("Erro"+e.getMessage(), "ProdutoController", Level.SEVERE);
+        }
+        if(error) {
+            return "Produto inserido com sucesso";
+        }else{
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para inserir");
+        }
+
     }
 
 

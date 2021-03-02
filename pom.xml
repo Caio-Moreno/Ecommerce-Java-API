@@ -46,7 +46,12 @@
 			<version>1.18.12</version>
 			<type>jar</type>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>7.0</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

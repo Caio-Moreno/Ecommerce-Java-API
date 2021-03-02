@@ -28,13 +28,20 @@ public class ProdutoController {
         return  lista;
     }
 
-    @RequestMapping(params = {"Nome"})
+    @RequestMapping(params = {"Nome"}, method = RequestMethod.GET)
     public List<Produto> ListaProdutoPorNome(String Nome) throws IOException, SQLException {
-        //gravaLog("Nome-->"+Nome+"Categoria-->"+Categoria,"PRINCIPALLLLL", Level.SEVERE);
-
         List<Produto> lista = ProdutoDAO.consultaProdutoPorNome(Nome);
         return  lista;
     }
+
+    @RequestMapping(method =  RequestMethod.POST)
+    public String Post(@RequestBody Produto produto)
+    {
+
+        
+        return "$produtoNome="+produto.get_nomeProduto()+"$produtoPreco"+produto.get_preco();
+    }
+
 
 
 

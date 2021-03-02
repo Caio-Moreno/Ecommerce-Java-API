@@ -6,7 +6,7 @@
       <synchronize>true</synchronize>
       <remarks>Connection</remarks>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://10.211.55.16:3306/brazukas</jdbc-url>
+      <jdbc-url>jdbc:mysql://10.211.55.16:3306/BRAZUKAS</jdbc-url>
     </data-source>
   </component>
 </project>

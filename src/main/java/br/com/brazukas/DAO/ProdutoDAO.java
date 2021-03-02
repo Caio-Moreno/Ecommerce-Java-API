@@ -100,7 +100,7 @@ public class ProdutoDAO {
         return listaProdutos;
     }
 
-    public static void inserirProduto(Produto produto) throws SQLException, IOException {
+    public static boolean inserirProduto(Produto produto) throws SQLException, IOException {
         gravaLog("Inserir produto", "ProdutoDAO", Level.WARNING);
         Imagem imagem = produto.get_imagem();
         String sqlInsert = "INSERT INTO PRODUTO(ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1, IMAGEM2, IMAGEM3, IMAGEM4) VALUES(DEFAULT, ?, ?,?, ?, ?, ?,?,?,?,?,?);";
@@ -129,10 +129,10 @@ public class ProdutoDAO {
 
             insertProduto.execute();
             insertEstoque.execute();
-
+            return true;
         }catch (SQLException e) {
             gravaLog(e.getMessage(), "ProdutoInsertDAO", Level.SEVERE);
+            return false;
         }
-        gravaLog("Finalizado", "ProdutoInsertDAO", Level.WARNING);
     }
 }

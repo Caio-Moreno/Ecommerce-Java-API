@@ -40,18 +40,13 @@ public class ProdutoController {
 
     @RequestMapping(method =  RequestMethod.POST)
     public String Post(@RequestBody Produto produto) throws IOException, SQLException {
-        boolean error = false;
 
-        try {
-            ProdutoDAO.inserirProduto(produto);
-            error = true;
-        }catch (Exception e){
-            gravaLog("Erro"+e.getMessage(), "ProdutoController", Level.SEVERE);
-        }
-        if(error) {
+        boolean inseriu = ProdutoDAO.inserirProduto(produto);
+
+        if(inseriu) {
             return "Produto inserido com sucesso";
         }else{
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para inserir");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para inserir produto");
         }
 
     }

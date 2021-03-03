@@ -37,7 +37,7 @@ public class ProdutoController {
         List<Produto> lista = ProdutoDAO.consultaProdutoPorNome(Nome);
         return  lista;
     }
-
+    
     @RequestMapping(method =  RequestMethod.POST)
     public String Post(@RequestBody Produto produto) throws IOException, SQLException {
 

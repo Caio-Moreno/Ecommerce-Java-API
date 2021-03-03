@@ -101,9 +101,9 @@ public class ProdutoDAO {
     }
 
     public static boolean inserirProduto(Produto produto) throws SQLException, IOException {
-        gravaLog("Inserir produto", "ProdutoDAO", Level.WARNING);
+        gravaLog("Inserir produto"+produto, "ProdutoDAO", Level.WARNING);
         Imagem imagem = produto.get_imagem();
-        String sqlInsert = "INSERT INTO PRODUTO(ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1, IMAGEM2, IMAGEM3, IMAGEM4) VALUES(DEFAULT, ?, ?,?, ?, ?, ?,?,?,?,?,?);";
+        String sqlInsert = "INSERT INTO PRODUTO(ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA) VALUES(DEFAULT, ?, ?,?, ?, ?, ?,?);";
         String sqlInsertEstoque = "INSERT INTO ESTOQUE(ID, ID_PRODUTO_FK, QUANTIDADE) VALUES(DEFAULT, LAST_INSERT_ID(), ?);";
 
         try {
@@ -117,10 +117,6 @@ public class ProdutoDAO {
             insertProduto.setString(5, produto.get_statusProduto());
             insertProduto.setDouble(6, produto.get_preco());
             insertProduto.setString(7, produto.get_plataforma());
-            insertProduto.setString(8, imagem.getCaminhoImagem1());
-            insertProduto.setString(9, imagem.getCaminhoImagem2());
-            insertProduto.setString(10, imagem.getCaminhoImagem3());
-            insertProduto.setString(11, imagem.getCaminhoImagem4());
 
             gravaLog("Inserir produto" + insertProduto, "ProdutoDAO", Level.WARNING);
             /*        Insert do estoque */

@@ -20,7 +20,9 @@ import br.com.brazukas.Models.Cliente;
 @RequestMapping("/Clientes")
 public class ClienteController {
 
-@RequestMapping(method = RequestMethod.POST)
+
+
+	@RequestMapping(method = RequestMethod.POST)
 public String Post(@RequestBody Cliente cliente) throws IOException, SQLException{
 	
 	boolean inseriu = ClienteDAO.inserirCliente(cliente);

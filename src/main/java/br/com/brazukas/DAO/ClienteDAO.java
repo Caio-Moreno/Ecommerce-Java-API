@@ -18,14 +18,14 @@ public class ClienteDAO {
 
 	
 	public static boolean inserirCliente (Cliente cliente) throws IOException, SQLException{
-		String sqlInserir = "INSERT INTO CLIENTE (ID_CLIENTE, NOME, CPF, SEXO, DATANASCIMENTO, TELEFONE, EMAIL, CEP, ENDERECO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE, ESTADO) VALUES"
+		String sqlInserir = "INSERT INTO CLIENTE (ID, NOME, CPF, SEXO, DATANASCIMENTO, TELEFONE, EMAIL, CEP, ENDERECO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE, ESTADO) VALUES"
 				+ "( DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ;";
 		
 		try {
 			Connection con = ConexaoDb.getConnection();
 			PreparedStatement ps = con.prepareStatement(sqlInserir);
 			
-			int i = 0;
+			int i = 1;
 			
 			ps.setString(i++, cliente.get_nome());
 			ps.setString(i++, cliente.get_cpf());
@@ -65,7 +65,7 @@ public class ClienteDAO {
             System.out.println(ps);
             
             while(rs.next()) {
-            	int idCliente = rs.getInt("ID_CLIENTE");
+            	int idCliente = rs.getInt("ID");
 				String nome = rs.getString("NOME");
 				String cpf  = rs.getString("CPF");
 				String sexo = rs.getString("SEXO");

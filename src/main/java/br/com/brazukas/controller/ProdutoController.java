@@ -1,11 +1,15 @@
 package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.ProdutoDAO;
+import br.com.brazukas.Models.Imagem;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
+import br.com.brazukas.controller.infra.FileServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -23,6 +27,9 @@ public class ProdutoController {
 
     private String nome;
 
+    @Autowired
+    private FileServer fileSaver;
+
     @RequestMapping(method = RequestMethod.GET)
     public List<ProdutoDto> ListaProdutos() throws IOException, SQLException {
 
@@ -39,8 +46,12 @@ public class ProdutoController {
     }
     
     @RequestMapping(method =  RequestMethod.POST)
-    public String Post(@RequestBody Produto produto) throws IOException, SQLException {
+    public String Post(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
 
+        if (!foto.getOriginalFilename().isEmpty()){
+            String path = fileSaver.upload(foto);
+            produto.set_imagem(new Imagem(path,null,null,null));
+        }
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
 
         if(inseriu) {

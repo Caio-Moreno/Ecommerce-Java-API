@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.com.brazukas.DAO.ClienteDAO;
 import br.com.brazukas.Models.Cliente;
@@ -16,6 +19,19 @@ import br.com.brazukas.Models.Cliente;
 @RestController
 @RequestMapping("/Clientes")
 public class ClienteController {
+
+@RequestMapping(method = RequestMethod.POST)
+public String Post(@RequestBody Cliente cliente) throws IOException, SQLException{
+	
+	boolean inseriu = ClienteDAO.inserirCliente(cliente);
+	
+	if (inseriu) {
+		return "Cliente cadastrado com sucesso!";
+	}else {
+		throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao cadastrar o cliente!");
+	}
+}
+	
 	
 @RequestMapping(method = RequestMethod.GET)
 

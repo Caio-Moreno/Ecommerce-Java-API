@@ -16,6 +16,41 @@ import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
 public class ClienteDAO {
 
+	
+	public static boolean inserirCliente (Cliente cliente) throws IOException, SQLException{
+		String sqlInserir = "INSERT INTO CLIENTE (ID_CLIENTE, NOME, CPF, SEXO, DATANASCIMENTO, TELEFONE, EMAIL, CEP, ENDERECO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE, ESTADO) VALUES"
+				+ "( DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ;";
+		
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlInserir);
+			
+			int i = 0;
+			
+			ps.setString(i++, cliente.get_nome());
+			ps.setString(i++, cliente.get_cpf());
+			ps.setString(i++, cliente.get_sexo() );
+			ps.setString(i++, cliente.get_dataNascimento() );
+			ps.setString(i++, cliente.get_telefone() );
+			ps.setString(i++, cliente.get_email());
+			ps.setString(i++, cliente.get_cep());
+			ps.setString(i++, cliente.get_endereco());
+			ps.setString(i++, cliente.get_bairro());
+			ps.setInt(i++, cliente.get_numero());
+			ps.setString(i++, cliente.get_complemento() );
+			ps.setString(i++, cliente.get_cidade());
+			ps.setString(i++, cliente.get_estado());
+						
+			ps.execute();
+			
+			return true;
+		
+		}catch (SQLException e) {
+			gravaLog(e.getMessage(), "ClienteInsertDAO", Level.SEVERE);
+			return false;
+		}
+	}
+	
 	public static List<Cliente> consultarCliente () throws SQLException, IOException{
 		List<Cliente> listaClientes = new ArrayList<>();
 		gravaLog("Consulta cliente","ClienteDAO", Level.INFO);

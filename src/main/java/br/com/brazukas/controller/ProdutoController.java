@@ -7,10 +7,13 @@ import br.com.brazukas.Models.Produto;
 import br.com.brazukas.controller.infra.FileServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -46,16 +49,19 @@ public class ProdutoController {
     }
     
     @RequestMapping(method =  RequestMethod.POST)
-    public String Post(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
+    public ProdutoDto Post(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
 
-        if (!foto.getOriginalFilename().isEmpty()){
+       /*if (!foto.getOriginalFilename().isEmpty()){
             String path = fileSaver.upload(foto);
             produto.set_imagem(new Imagem(path,null,null,null));
-        }
+        }*/
+        gravaLog("produto"+produto, "LLLLLLLLLLLL", Level.SEVERE);
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
 
+
+
         if(inseriu) {
-            return "Produto inserido com sucesso";
+            return ProdutoDAO.retornarUltimoProduto();
         }else{
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para inserir produto");
         }

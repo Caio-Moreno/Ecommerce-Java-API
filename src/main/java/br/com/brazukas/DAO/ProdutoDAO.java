@@ -131,13 +131,43 @@ public class ProdutoDAO {
             return false;
         }
     }
-
     public static boolean atualizarProduto(Produto produto){
-
-
         return false;
     }
 
+    public static  ProdutoDto retornarUltimoProduto() throws IOException {
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK order by prod.ID desc limit 1;";
+        ProdutoDto produto = null;
+
+        try {
+
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            ResultSet rs = ps.executeQuery();
+
+            gravaLog("Consulta produto" + ps, "ProdutoDAO", Level.INFO);
+
+            while (rs.next()) {
+                int codProduto = rs.getInt("ID");
+                String nome = rs.getString("NOME");
+                String descricao = rs.getString("DESCRICAO");
+                double qualidade = rs.getDouble("QUALIDADE");
+                String categoria = rs.getString("CATEGORIA");
+                String statusProduto = rs.getString("STATUS");
+                double preco = rs.getDouble("PRECO");
+                String imagem1 = rs.getString("IMAGEM1");
+                String plataforma = rs.getString("PLATAFORMA");
+                int qtdEstoque = rs.getInt("QUANTIDADE");
+                produto = new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem1, plataforma);
+                gravaLog("" + produto, "ProdutoDAO", Level.WARNING);
+
+
+            }
+        }catch (Exception e){
+            gravaLog(e.getMessage(), "Busca ultimo", Level.SEVERE);
+        }
+        return produto;
+    }
 
 
 }

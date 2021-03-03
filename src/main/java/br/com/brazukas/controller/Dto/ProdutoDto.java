@@ -16,7 +16,7 @@ public class ProdutoDto {
     private String _categoria;
     private String _statusProduto;
     private int _qtdEstoque;
-    private double _preço;
+    private double _preco;
     private String _imagem;
     private String _plataforma;
 

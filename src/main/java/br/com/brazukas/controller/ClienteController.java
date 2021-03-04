@@ -20,6 +20,17 @@ import br.com.brazukas.Models.Cliente;
 @RequestMapping("/Clientes")
 public class ClienteController {
 
+	
+	@RequestMapping(method = RequestMethod.PUT)
+	public String Put(@RequestBody Cliente cliente) throws IOException, SQLException{
+		boolean alterou = ClienteDAO.alterarCliente(cliente);
+		
+		if(alterou) {
+			return "Cliente alterado com sucesso!";
+		}else {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao alterar as informações do cliente!");
+		}
+	}
 
 	@RequestMapping(method = RequestMethod.DELETE)
 	public String Deletar (@RequestBody String cpf) throws IOException, SQLException{
@@ -48,7 +59,6 @@ public String Post(@RequestBody Cliente cliente) throws IOException, SQLExceptio
 	
 	
 @RequestMapping(method = RequestMethod.GET)
-
 public List<Cliente> ListaClientes() throws IOException, SQLException{
 	
 	List<Cliente> listaCliente = ClienteDAO.consultarCliente();
@@ -57,8 +67,7 @@ public List<Cliente> ListaClientes() throws IOException, SQLException{
 }
 	
 
-@RequestMapping(params = {"cpf"})
-
+@RequestMapping(params = {"cpf"}, method = RequestMethod.GET)
 	public List<Cliente> filtraCliente(String cpf) throws IOException, SQLException{
 	
 	List<Cliente> lista = ClienteDAO.getCliente(cpf);

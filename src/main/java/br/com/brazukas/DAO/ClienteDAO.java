@@ -16,6 +16,38 @@ import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
 public class ClienteDAO {
 	
+	public static boolean alterarCliente (Cliente cliente) throws IOException, SQLException{
+		String sqlAlterar = "UPDATE CLIENTE SET TELEFONE = ?, EMAIL = ?, CEP = ?, ENDERECO = ?, BAIRRO = ?, NUMERO = ?, COMPLEMENTO = ?, CIDADE = ?, ESTADO = ? "
+				+ "WHERE CPF = ? ;";
+		
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlAlterar);
+			
+			int i = 1;
+				
+			ps.setString(i++, cliente.get_telefone() );
+			ps.setString(i++, cliente.get_email());
+			ps.setString(i++, cliente.get_cep());
+			ps.setString(i++, cliente.get_endereco());
+			ps.setString(i++, cliente.get_bairro());
+			ps.setInt(i++, cliente.get_numero());
+			ps.setString(i++, cliente.get_complemento() );
+			ps.setString(i++, cliente.get_cidade());
+			ps.setString(i++, cliente.get_estado());
+			ps.setString(i++, cliente.get_cpf());
+			
+			ps.execute();
+			
+			return true;
+			
+		}catch (SQLException | IOException e) {
+			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
+			return false;
+		}
+		
+	}
+	
 	public static boolean excluirCliente (String cpf) throws IOException, SQLException{
 		String sqlExcluir = "DELETE FROM CLIENTE WHERE CPF = ? ;";
 				

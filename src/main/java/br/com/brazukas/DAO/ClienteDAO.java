@@ -15,7 +15,26 @@ import br.com.brazukas.Util.ConexaoDb;
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
 public class ClienteDAO {
-
+	
+	public static boolean excluirCliente (String cpf) throws IOException, SQLException{
+		String sqlExcluir = "DELETE FROM CLIENTE WHERE CPF = ? ;";
+				
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlExcluir);
+			
+			ps.setString(1, cpf);
+			
+			ps.execute();
+			
+			return true;
+		}catch (SQLException | IOException e) {
+			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
+			return false;
+		}
+		
+	}
+	
 	
 	public static boolean inserirCliente (Cliente cliente) throws IOException, SQLException{
 		String sqlInserir = "INSERT INTO CLIENTE (ID, NOME, CPF, SEXO, DATANASCIMENTO, TELEFONE, EMAIL, CEP, ENDERECO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE, ESTADO) VALUES"

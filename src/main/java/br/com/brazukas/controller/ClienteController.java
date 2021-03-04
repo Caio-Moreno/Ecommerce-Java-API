@@ -21,7 +21,19 @@ import br.com.brazukas.Models.Cliente;
 public class ClienteController {
 
 
-
+	@RequestMapping(method = RequestMethod.DELETE)
+	public String Deletar (@RequestBody String cpf) throws IOException, SQLException{
+		boolean deletou = ClienteDAO.excluirCliente(cpf);
+		
+		if(deletou) {
+			return "Cliente deletado com sucesso!";
+		}else {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao excluir o cliente!");
+		}
+		
+	}
+	
+	
 	@RequestMapping(method = RequestMethod.POST)
 public String Post(@RequestBody Cliente cliente) throws IOException, SQLException{
 	

@@ -6,6 +6,9 @@ import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
 import br.com.brazukas.controller.infra.FileServer;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +34,14 @@ public class ProdutoController {
     @Autowired
     private FileServer fileSaver;
 
+    @ApiOperation(value = "Retorna uma lista de produtos")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna a lista de produtos"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
     @RequestMapping(method = RequestMethod.GET)
-    public List<ProdutoDto> ListaProdutos() throws IOException, SQLException {
+    public List<ProdutoDto> ListaTodosProdutos() throws IOException, SQLException {
 
         gravaLog("nome->>"+nome, "padrao", Level.INFO);
         List<ProdutoDto> lista = ProdutoDAO.consultarProduto();
@@ -40,14 +49,26 @@ public class ProdutoController {
         return  lista;
     }
 
+    @ApiOperation(value = "Retorna uma lista de produtos filtros por nome")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna a lista de produtos filtrados por nome"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
     @RequestMapping(params = {"Nome"}, method = RequestMethod.GET)
-    public List<Produto> ListaProdutoPorNome(String Nome) throws IOException, SQLException {
+    public List<Produto> ListaProdutosPorNome(String Nome) throws IOException, SQLException {
         List<Produto> lista = ProdutoDAO.consultaProdutoPorNome(Nome);
         return  lista;
     }
-    
+
+    @ApiOperation(value = "Insere um produto")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna o produto inserido"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
     @RequestMapping(method =  RequestMethod.POST)
-    public ProdutoDto Post(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
+    public ProdutoDto InserirProduto(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
         if(inseriu) {
             return ProdutoDAO.retornarUltimoProduto();
@@ -55,6 +76,13 @@ public class ProdutoController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para inserir produto");
         }
     }
+
+    @ApiOperation(value = "Atualiza o produto recebendo o parametro Id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna o produto atualizado"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
     @RequestMapping(params = {"Id"}, method = RequestMethod.PUT)
     public Produto atualizaCliente(@RequestBody Produto produto, int Id ) throws IOException, SQLException {
 
@@ -65,6 +93,12 @@ public class ProdutoController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para atualizar produto");
         }
     }
+    @ApiOperation(value = "Deleta o produto recebendo o parametro Id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna a confirmação do produto"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
     @RequestMapping(params = {"Id"}, method = RequestMethod.DELETE)
     public String DeletaCliente(int Id) throws IOException, SQLException {
         Produto prod = ProdutoDAO.consultaProdutoPorId(Id);

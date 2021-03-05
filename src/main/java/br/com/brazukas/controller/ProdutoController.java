@@ -68,7 +68,7 @@ public class ProdutoController {
             @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
     })
     @RequestMapping(method =  RequestMethod.POST)
-    public ProdutoDto InserirProduto(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
+    public ProdutoDto InserirProduto(@RequestBody Produto produto, List<MultipartFile> fotos) throws IOException, SQLException {
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
         if(inseriu) {
             return ProdutoDAO.retornarUltimoProduto();

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,14 +19,14 @@ import br.com.brazukas.Models.Cliente;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/Clientes")
+@RequestMapping("/clientes")
 public class ClienteController {
 
 	
-	@RequestMapping(method = RequestMethod.PUT)
-	public String Put(@RequestBody Cliente cliente) throws IOException, SQLException{
+	@RequestMapping(params={"cpf"}, method = RequestMethod.PUT)
+	public String Put(@RequestBody Cliente cliente, String cpf) throws IOException, SQLException{
 		boolean alterou = ClienteDAO.alterarCliente(cliente);
-		
+				
 		if(alterou) {
 			return "Cliente alterado com sucesso!";
 		}else {
@@ -32,8 +34,8 @@ public class ClienteController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.DELETE)
-	public String Deletar (@RequestBody String cpf) throws IOException, SQLException{
+	@RequestMapping(params={"cpf"}, method = RequestMethod.DELETE)
+	public String Deletar ( String cpf) throws IOException, SQLException{
 		boolean deletou = ClienteDAO.excluirCliente(cpf);
 		
 		if(deletou) {
@@ -68,9 +70,10 @@ public List<Cliente> ListaClientes() throws IOException, SQLException{
 	
 
 @RequestMapping(params = {"cpf"}, method = RequestMethod.GET)
-	public List<Cliente> filtraCliente(String cpf) throws IOException, SQLException{
+	public Cliente filtraCliente(String cpf) throws IOException, SQLException{
 	
-	List<Cliente> lista = ClienteDAO.getCliente(cpf);
+	Cliente lista = ClienteDAO.getCliente(cpf);
+	System.out.println(lista);
 	return lista;
 }
 

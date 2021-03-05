@@ -17,7 +17,7 @@ import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 public class ClienteDAO {
 	
 	public static boolean alterarCliente (Cliente cliente) throws IOException, SQLException{
-		String sqlAlterar = "UPDATE CLIENTE SET TELEFONE = ?, EMAIL = ?, CEP = ?, ENDERECO = ?, BAIRRO = ?, NUMERO = ?, COMPLEMENTO = ?, CIDADE = ?, ESTADO = ? "
+		String sqlAlterar = "UPDATE CLIENTE SET NOME = ?, SEXO = ?, DATANASCIMENTO = ?, TELEFONE = ?, EMAIL = ?, CEP = ?, ENDERECO = ?, BAIRRO = ?, NUMERO = ?, COMPLEMENTO = ?, CIDADE = ?, ESTADO = ? "
 				+ "WHERE CPF = ? ;";
 		
 		try {
@@ -25,7 +25,10 @@ public class ClienteDAO {
 			PreparedStatement ps = con.prepareStatement(sqlAlterar);
 			
 			int i = 1;
-				
+			
+			ps.setString(i++, cliente.get_nome());
+			ps.setString(i++, cliente.get_sexo());
+			ps.setString(i++, cliente.get_dataNascimento());
 			ps.setString(i++, cliente.get_telefone() );
 			ps.setString(i++, cliente.get_email());
 			ps.setString(i++, cliente.get_cep());
@@ -142,13 +145,13 @@ public class ClienteDAO {
 		return listaClientes;
 	}
 	
-	public static List<Cliente> getCliente(String cpf) throws IOException {
-		List<Cliente> filtroCliente = new ArrayList<>();
-
+	public static Cliente getCliente(String cpf) throws IOException {
+		
 		gravaLog("Consulta cliente por cpf" + cpf, "ClienteDAO", Level.INFO);
 
+		Cliente cliente = null;
 		String sqlConsulta = "SELECT * FROM CLIENTE WHERE CPF = ? ; ";
-
+		
 		try {
 			Connection con = ConexaoDb.getConnection();
 			PreparedStatement ps = con.prepareStatement(sqlConsulta);
@@ -159,8 +162,8 @@ public class ClienteDAO {
 
 			System.out.println(ps);
 
-			while (rs.next()) {
-				int idCliente = rs.getInt("IDCLIENTE");
+			while(rs.next()) {
+				int idCliente = rs.getInt("ID");
 				String nome = rs.getString("NOME");
 				String sexo = rs.getString("SEXO");
 				String dataNascimento = rs.getString("DATANASCIMENTO");
@@ -173,16 +176,17 @@ public class ClienteDAO {
 				String complemento = rs.getString("COMPLEMENTO");
 				String cidade = rs.getString("CIDADE");
 				String estado = rs.getString("ESTADO");
-				
-				filtroCliente.add(new Cliente(idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado));
+			
+				cliente = new Cliente (idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado);
+		
+			}	
 
-			}
-
+		
 		} catch (SQLException | IOException e) {
 			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
 		}
 
-		return filtroCliente;
+		return cliente;
 	}
 
 }

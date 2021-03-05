@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class FileServer {
@@ -17,13 +19,19 @@ public class FileServer {
     private AmazonS3 amazonS3;
     private static final String BUCKET="imagens-bombapath-games";
 
-    public String upload(@RequestParam MultipartFile foto) {
+    public List<String> upload(@RequestParam List<MultipartFile> foto) {
+        List<String> imagensPath = new ArrayList<>();
+
         try{
-            amazonS3.putObject(new PutObjectRequest(BUCKET,
-                    foto.getOriginalFilename(),foto.getInputStream(),null)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-            System.out.println("------->  "+"http://s3.amazonaws.com/"+BUCKET+"/"+foto.getOriginalFilename());
-            return "http://s3.amazonaws.com/"+BUCKET+"/"+foto.getOriginalFilename();
+            for (int i = 0; i < foto.size();i++) {
+                var imagemName = "imagem"+i+".jpg";
+                var imagem = foto.get(i);
+                amazonS3.putObject(new PutObjectRequest(BUCKET,
+                        imagemName , imagem.getInputStream(), null)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                 imagensPath.add("http://" + BUCKET + ".s3.amazonaws.com/" + imagemName) ;
+            }
+            return imagensPath;
         } catch (IllegalStateException | IOException e) {
             throw new RuntimeException(e);
         }

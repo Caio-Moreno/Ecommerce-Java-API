@@ -51,10 +51,11 @@ public class ProdutoController {
     @RequestMapping(method =  RequestMethod.POST)
     public ProdutoDto Post(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
 
-       /*if (!foto.getOriginalFilename().isEmpty()){
-            String path = fileSaver.upload(foto);
-            produto.set_imagem(new Imagem(path,null,null,null));
-        }*/
+//       if (!foto.getOriginalFilename().isEmpty()){
+//            String path = fileSaver.upload(foto);
+//            produto.set_imagem(new Imagem(path,null,null,null));
+//        }
+
         gravaLog("produto"+produto, "LLLLLLLLLLLL", Level.SEVERE);
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
 

@@ -1,15 +1,13 @@
 package br.com.brazukas.controller;
 
+import br.com.brazukas.DAO.ClienteDAO;
 import br.com.brazukas.DAO.ProdutoDAO;
-import br.com.brazukas.Models.Imagem;
+import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
 import br.com.brazukas.controller.infra.FileServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -50,26 +48,21 @@ public class ProdutoController {
     
     @RequestMapping(method =  RequestMethod.POST)
     public ProdutoDto Post(@RequestBody Produto produto, MultipartFile foto) throws IOException, SQLException {
-
-//       if (!foto.getOriginalFilename().isEmpty()){
-//            String path = fileSaver.upload(foto);
-//            produto.set_imagem(new Imagem(path,null,null,null));
-//        }
-
-        gravaLog("produto"+produto, "LLLLLLLLLLLL", Level.SEVERE);
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
-
-
-
         if(inseriu) {
             return ProdutoDAO.retornarUltimoProduto();
         }else{
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para inserir produto");
         }
-
     }
+    @RequestMapping(params = {"Id"}, method = RequestMethod.PUT)
+    public Produto atualizaCliente(@RequestBody Produto produto, int Id ) throws IOException, SQLException {
 
-
-
-
+        boolean inseriu = ProdutoDAO.atualizarProduto(produto, Id);
+        if(inseriu){
+            return ProdutoDAO.consultaProdutoPorId(Id);
+        }else{
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para atualizar produto");
+        }
+    }
 }

@@ -65,4 +65,20 @@ public class ProdutoController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para atualizar produto");
         }
     }
+    @RequestMapping(params = {"Id"}, method = RequestMethod.DELETE)
+    public String DeletaCliente(int Id) throws IOException, SQLException {
+        Produto prod = ProdutoDAO.consultaProdutoPorId(Id);
+
+        if (prod == null) {
+            return "Erro para deletar produto, o mesmo não existe mais";
+        }
+
+        boolean deletou = ProdutoDAO.deletarCliente(Id);
+
+        if(deletou){
+            return "Produto deletado com sucesso!";
+        }else{
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro para deletar produto");
+        }
+    }
 }

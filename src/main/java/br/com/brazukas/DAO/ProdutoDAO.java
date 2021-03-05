@@ -133,13 +133,10 @@ public class ProdutoDAO {
         String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK order by prod.ID desc limit 1;";
         ProdutoDto produto = null;
         try {
-
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlConsulta);
             ResultSet rs = ps.executeQuery();
-
             gravaLog("Consulta produto" + ps, "ProdutoDAO", Level.INFO);
-
             while (rs.next()) {
                 int codProduto = rs.getInt("ID");
                 String nome = rs.getString("NOME");
@@ -153,15 +150,12 @@ public class ProdutoDAO {
                 int qtdEstoque = rs.getInt("QUANTIDADE");
                 produto = new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem1, plataforma);
                 gravaLog("" + produto, "ProdutoDAO", Level.WARNING);
-
-
             }
         }catch (Exception e){
             gravaLog(e.getMessage(), "Busca ultimo", Level.SEVERE);
         }
         return produto;
     }
-
     public static boolean atualizarProduto(Produto produto, int id) throws IOException {
         Produto prod = null;
         String sqlUpdate = "UPDATE PRODUTO SET NOME = ?, DESCRICAO = ?, QUALIDADE = ?, CATEGORIA = ?, STATUS = ?, PRECO = ?, PLATAFORMA = ?, IMAGEM1 = ?, IMAGEM2 = ?, IMAGEM3 = ?, IMAGEM4 = ? WHERE ID = ?";
@@ -169,7 +163,6 @@ public class ProdutoDAO {
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlUpdate);
-
             ps.setString(1, produto.get_nomeProduto());
             ps.setString(2, produto.get_descricao());
             ps.setDouble(3, produto.get_qualidadeProduto());
@@ -189,7 +182,6 @@ public class ProdutoDAO {
         }
         return inseriu;
     }
-
     public static Produto consultaProdutoPorId(int id) throws IOException {
         Produto produto = null;
 
@@ -226,5 +218,23 @@ public class ProdutoDAO {
             gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ProdutoDAO", Level.WARNING);
         }
         return produto;
+    }
+
+    public static boolean deletarCliente(int id) throws IOException {
+        gravaLog("DeletarCliente"+id,"ProdutoDAO", Level.SEVERE);
+        String sqlDelete = "DELETE FROM PRODUTO WHERE ID = ?";
+        boolean deletou = true;
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlDelete);
+            ps.setInt(1,id);
+            gravaLog("DeletarCliente"+ps,"ProdutoDAO", Level.SEVERE);
+            ps.execute();
+
+        }catch (Exception e){
+            gravaLog("DeletarCliente erro"+e.getMessage(),"ProdutoDAO", Level.SEVERE);
+            deletou = false;
+        }
+        return  deletou;
     }
 }

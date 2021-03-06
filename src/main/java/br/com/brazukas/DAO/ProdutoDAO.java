@@ -237,4 +237,21 @@ public class ProdutoDAO {
         }
         return  deletou;
     }
+
+    public static boolean existeProduto(int id) throws IOException {
+        String sqlConsulta = "SELECT * FROM PRODUTO WHERE ID = ?";
+
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            System.out.println(ps);
+            return rs.next();
+        }catch (SQLException | IOException e) {
+
+            gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ProdutoDAO", Level.WARNING);
+            return  false;
+        }
+    }
 }

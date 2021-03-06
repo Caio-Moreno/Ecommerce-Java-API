@@ -189,4 +189,22 @@ public class ClienteDAO {
 		return cliente;
 	}
 
+	public static boolean clienteExite(int id) throws IOException {
+
+		gravaLog("Consulta cliente por cpf" + id, "ClienteDAO", Level.INFO);
+		String sqlConsulta = "SELECT * FROM CLIENTE WHERE ID = ? ; ";
+
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			System.out.println(ps);
+			return rs.next();
+		} catch (SQLException | IOException e) {
+			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
+			return false;
+		}
+	}
+
 }

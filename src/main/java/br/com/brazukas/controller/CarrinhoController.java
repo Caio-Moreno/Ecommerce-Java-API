@@ -19,10 +19,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/Carrinho")
 public class CarrinhoController {
-    @ApiOperation(value = "Retorna carrinho")
+    @ApiOperation(value = "Retorna insere no carrinho")
     @RequestMapping(method = RequestMethod.POST)
     public CarrinhoResponse enviarParaCarrinho(@RequestBody Carrinho carrinho) throws IOException {
-        System.out.println(carrinho);
         boolean existeCliente = ClienteDAO.clienteExite(carrinho.get_idCliente());
         boolean existeProduto = ProdutoDAO.existeProduto(carrinho.get_idProduto());
         boolean continuar = (existeCliente && existeProduto);
@@ -36,4 +35,22 @@ public class CarrinhoController {
         }
         return  new CarrinhoResponse(404,0,"Produto não está mais disponivel para compra",null);
     }
+
+    @ApiOperation(value = "Retorna o carrinho")
+    @RequestMapping(params = {"id"},method = RequestMethod.GET)
+    public CarrinhoResponse consultaCarrinho(int id) throws IOException {
+        boolean existeCliente = ClienteDAO.clienteExite(id);
+        if(existeCliente) {
+            List<Carrinho> lista = CarrinhoDAO.Consultar(id);
+            if(lista != null){
+                return  new CarrinhoResponse(200,lista.size(),"Produtos encontrados no carrinho",lista);
+            }else {
+                return  new CarrinhoResponse(500,0,"Nenhum item no carrinho",null);
+            }
+        }
+        return  new CarrinhoResponse(404,0,"Ainda não existe nenhum carrinho de compra vinculado ao cliente",null);
+    }
+
+
+
 }

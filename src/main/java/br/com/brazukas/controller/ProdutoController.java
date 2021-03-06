@@ -38,7 +38,11 @@ public class ProdutoController {
 
     @ApiOperation(value = "Insere um produto")
     @RequestMapping(method =  RequestMethod.POST)
+<<<<<<< HEAD
     public ProdutoResponseDto InserirProduto(@RequestBody Produto produto) throws IOException, SQLException {
+=======
+    public ProdutoDto InserirProduto(@RequestBody Produto produto, List<MultipartFile> fotos) throws IOException, SQLException {
+>>>>>>> f8185805ad5ad7e5cb3f27629c7b608b64d61e19
         boolean inseriu = ProdutoDAO.inserirProduto(produto);
         List<ProdutoDto> list = new ArrayList<>();
 

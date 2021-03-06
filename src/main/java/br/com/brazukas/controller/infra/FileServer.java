@@ -1,5 +1,6 @@
 package br.com.brazukas.controller.infra;
 
+import br.com.brazukas.Models.Produto;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -24,7 +25,7 @@ public class FileServer {
 
         try{
             for (int i = 0; i < foto.size();i++) {
-                var imagemName = "imagem"+i+".jpg";
+                var imagemName =  "imagem"+i+".jpg";
                 var imagem = foto.get(i);
                 amazonS3.putObject(new PutObjectRequest(BUCKET,
                         imagemName , imagem.getInputStream(), null)

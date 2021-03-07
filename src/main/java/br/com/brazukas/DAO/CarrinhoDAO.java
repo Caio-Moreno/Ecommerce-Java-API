@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -57,5 +58,37 @@ public class CarrinhoDAO {
             lista = null;
         }
         return lista;
+    }
+
+    public static boolean atualizar(Carrinho carrinho) throws IOException {
+        String sql = "UPDATE CARRINHO SET QUANTIDADE = ? WHERE ID_CLIENTE = ? AND ID_PRODUTO = ?";
+        try{
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,carrinho.get_quantidade());
+            ps.setInt(2, carrinho.get_idCliente());
+            ps.setInt(3, carrinho.get_idProduto());
+            gravaLog("Consulta"+ps, "CARRINHODAO", Level.SEVERE);
+            ps.executeUpdate();
+            return true;
+        }catch (Exception e){
+            gravaLog("ERRO"+e.getMessage(), "CARRINHODAO", Level.SEVERE);
+            return  false;
+        }
+    }
+
+    public static boolean existeProduto(int idProduto) {
+        String sql = "SELECT * FROM CARRINHO where ID_PRODUTO = ?;";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,idProduto);
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next();
+        } catch (SQLException | IOException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
 }

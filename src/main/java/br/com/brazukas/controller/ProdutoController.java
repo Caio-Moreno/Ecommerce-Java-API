@@ -1,6 +1,7 @@
 package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.ProdutoDAO;
+import br.com.brazukas.Models.ProdutoAtualizar;
 import br.com.brazukas.Models.Responses.ProdutoResponse;
 import br.com.brazukas.Models.Responses.ProdutoResponseDto;
 import br.com.brazukas.controller.Dto.ProdutoDto;
@@ -26,12 +27,29 @@ public class ProdutoController {
         return new ProdutoResponseDto(200,listaProd.size()+" Produtos encontrados", listaProd);
     }
 
+    @ApiOperation(value = "Retorna uma lista de produtos geral")
+    @RequestMapping(params = {"status"}, method = RequestMethod.GET)
+    public ProdutoResponseDto ListaTodosProdutosGeral(String status) throws IOException, SQLException {
+        List<ProdutoDto> listaProd =ProdutoDAO.consultarProdutoGeral();
+        return new ProdutoResponseDto(200,listaProd.size()+" Produtos encontrados", listaProd);
+    }
+
     @ApiOperation(value = "Retorna uma lista de produtos filtros por nome")
     @RequestMapping(params = {"Nome"}, method = RequestMethod.GET)
     public ProdutoResponse ListaProdutosPorNome(String Nome) throws IOException {
         List<Produto> listaProdutos =  ProdutoDAO.consultaProdutoPorNome(Nome);
 
 
+        return new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos);
+    }
+
+    @ApiOperation(value = "Retorna uma lista de produtos filtros por ID")
+    @RequestMapping(params = {"Id"}, method = RequestMethod.GET)
+    public ProdutoResponse ListaProdutosPorid(int Id) throws IOException {
+        Produto prod =  ProdutoDAO.consultaProdutoPorId(Id);
+
+        List<Produto> listaProdutos = new ArrayList<>();
+        listaProdutos.add(prod);
         return new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos);
     }
 
@@ -83,5 +101,18 @@ public class ProdutoController {
                 }else{
                     return new ProdutoResponse(500, "Erro para deletar produto", null);
                 }
+            }
+
+            @ApiOperation(value = "Atualiza o status do produto")
+            @RequestMapping(method = RequestMethod.PUT)
+            public ProdutoResponseDto atualizaStatus(@RequestBody ProdutoAtualizar prod) throws IOException{
+                boolean atualizou = ProdutoDAO.atualizaStatus(prod.get_id(), prod.get_status());
+
+                if(atualizou){
+                    return new ProdutoResponseDto(200, "Atualizado com sucesso!", null);
+                }else{
+                    return new ProdutoResponseDto(500, "Erro para atualizar o status", null);
+                }
+
             }
         }

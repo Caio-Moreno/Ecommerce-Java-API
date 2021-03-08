@@ -1,6 +1,8 @@
 package br.com.brazukas.controller;
 
+import br.com.brazukas.DAO.ImagemDAO;
 import br.com.brazukas.Models.Imagem;
+import br.com.brazukas.Models.Produto;
 import br.com.brazukas.controller.infra.FileServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +21,8 @@ public class ImagemController {
 
     private Imagem imagem = Imagem.builder().build();
 
-    @RequestMapping(method =  RequestMethod.POST)
-    public Imagem Post(@RequestBody List<MultipartFile> foto) throws IOException, SQLException {
+    @RequestMapping(params = {"id"},method =  RequestMethod.POST)
+    public Imagem Post(@RequestBody List<MultipartFile> foto,int id) throws IOException, SQLException {
 
         var caminhoImagem = fileSaver.upload(foto);
         System.out.println(caminhoImagem.size() + " size");
@@ -41,6 +43,8 @@ public class ImagemController {
             }
         }
 
+
+        ImagemDAO.inserirImagens(imagem,id);
 
         return imagem;
 

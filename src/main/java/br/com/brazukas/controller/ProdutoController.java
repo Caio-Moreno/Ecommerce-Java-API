@@ -35,6 +35,16 @@ public class ProdutoController {
         return new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos);
     }
 
+    @ApiOperation(value = "Retorna uma lista de produtos filtros por ID")
+    @RequestMapping(params = {"Id"}, method = RequestMethod.GET)
+    public ProdutoResponse ListaProdutosPorid(int Id) throws IOException {
+        Produto prod =  ProdutoDAO.consultaProdutoPorId(Id);
+
+        List<Produto> listaProdutos = new ArrayList<>();
+        listaProdutos.add(prod);
+        return new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos);
+    }
+
     @ApiOperation(value = "Insere um produto")
     @RequestMapping(method =  RequestMethod.POST)
     public ProdutoResponseDto InserirProduto(@RequestBody Produto produto) throws IOException, SQLException {

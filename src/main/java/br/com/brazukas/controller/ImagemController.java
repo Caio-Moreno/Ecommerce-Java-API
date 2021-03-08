@@ -19,12 +19,13 @@ public class ImagemController {
     @Autowired
     private FileServer fileSaver;
 
-    private Imagem imagem = Imagem.builder().build();
+
 
     @RequestMapping(params = {"id"},method =  RequestMethod.POST)
     public Imagem Post(@RequestBody List<MultipartFile> foto,int id) throws IOException, SQLException {
-
-        var caminhoImagem = fileSaver.upload(foto);
+         Imagem imagem = Imagem.builder().build();
+         
+        var caminhoImagem = fileSaver.upload(foto,id);
         System.out.println(caminhoImagem.size() + " size");
 
         System.out.println(imagem.getCaminhoImagem1());

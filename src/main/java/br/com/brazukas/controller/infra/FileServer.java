@@ -20,12 +20,13 @@ public class FileServer {
     private AmazonS3 amazonS3;
     private static final String BUCKET="imagens-bombapath-games";
 
-    public List<String> upload(@RequestParam List<MultipartFile> foto) {
+    public List<String> upload(@RequestParam List<MultipartFile> foto, int id) {
         List<String> imagensPath = new ArrayList<>();
 
         try{
+            System.out.println(id + "<--  esse o id da imagem");
             for (int i = 0; i < foto.size();i++) {
-                var imagemName =  "imagem"+i+".jpg";
+                var imagemName =  id + "imagem"+i+".jpg";
                 var imagem = foto.get(i);
                 amazonS3.putObject(new PutObjectRequest(BUCKET,
                         imagemName , imagem.getInputStream(), null)

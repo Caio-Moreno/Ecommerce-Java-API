@@ -254,4 +254,55 @@ public class ProdutoDAO {
             return  false;
         }
     }
+
+    public static boolean atualizaStatus(int id, String status) throws IOException {
+        String sql = "UPDATE PRODUTO SET STATUS = ? WHERE ID = ?";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1,status);
+            ps.setInt(2,id);
+            ps.executeUpdate();
+            return true;
+        }catch (Exception e){
+            gravaLog("ERRO PARA ATUALIZAR STATUS"+e.getMessage(), "PRODUTODAO", Level.SEVERE);
+        }
+        return  false;
+    }
+
+    public static List<ProdutoDto> consultarProdutoGeral() throws SQLException, IOException {
+        List<ProdutoDto> listaProdutos = new ArrayList<>();
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK";
+
+        try {
+
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            ResultSet rs = ps.executeQuery();
+
+            gravaLog("Consulta produto" + ps, "ProdutoDAO", Level.INFO);
+
+            while (rs.next()) {
+                int codProduto = rs.getInt("ID");
+                String nome = rs.getString("NOME");
+                String descricao = rs.getString("DESCRICAO");
+                double qualidade = rs.getDouble("QUALIDADE");
+                String categoria = rs.getString("CATEGORIA");
+                String statusProduto = rs.getString("STATUS");
+                double preco = rs.getDouble("PRECO");
+                String imagem1 = rs.getString("IMAGEM1");
+                String plataforma = rs.getString("PLATAFORMA");
+                int qtdEstoque = rs.getInt("QUANTIDADE");
+                listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem1, plataforma));
+                for (ProdutoDto prod : listaProdutos) {
+                    gravaLog("Abrindo produto", "ProdutoDAO", Level.WARNING);
+                    gravaLog("" + prod, "ProdutoDAO", Level.WARNING);
+                }
+            }
+
+        } catch (SQLException | IOException e) {
+            gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ProdutoDAO", Level.WARNING);
+        }
+        return listaProdutos;
+    }
 }

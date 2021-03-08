@@ -1,6 +1,7 @@
 package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.ProdutoDAO;
+import br.com.brazukas.Models.ProdutoAtualizar;
 import br.com.brazukas.Models.Responses.ProdutoResponse;
 import br.com.brazukas.Models.Responses.ProdutoResponseDto;
 import br.com.brazukas.controller.Dto.ProdutoDto;
@@ -23,6 +24,13 @@ public class ProdutoController {
     @RequestMapping(method = RequestMethod.GET)
     public ProdutoResponseDto ListaTodosProdutos() throws IOException, SQLException {
         List<ProdutoDto> listaProd =ProdutoDAO.consultarProduto();
+        return new ProdutoResponseDto(200,listaProd.size()+" Produtos encontrados", listaProd);
+    }
+
+    @ApiOperation(value = "Retorna uma lista de produtos geral")
+    @RequestMapping(params = {"status"}, method = RequestMethod.GET)
+    public ProdutoResponseDto ListaTodosProdutosGeral(String status) throws IOException, SQLException {
+        List<ProdutoDto> listaProd =ProdutoDAO.consultarProdutoGeral();
         return new ProdutoResponseDto(200,listaProd.size()+" Produtos encontrados", listaProd);
     }
 
@@ -93,5 +101,18 @@ public class ProdutoController {
                 }else{
                     return new ProdutoResponse(500, "Erro para deletar produto", null);
                 }
+            }
+
+            @ApiOperation(value = "Atualiza o status do produto")
+            @RequestMapping(method = RequestMethod.PUT)
+            public ProdutoResponseDto atualizaStatus(@RequestBody ProdutoAtualizar prod) throws IOException{
+                boolean atualizou = ProdutoDAO.atualizaStatus(prod.get_id(), prod.get_status());
+
+                if(atualizou){
+                    return new ProdutoResponseDto(200, "Atualizado com sucesso!", null);
+                }else{
+                    return new ProdutoResponseDto(500, "Erro para atualizar o status", null);
+                }
+
             }
         }

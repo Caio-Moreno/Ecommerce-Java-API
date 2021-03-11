@@ -33,13 +33,13 @@ public class ImagemController {
         System.out.println(imagem.toString() + "to aqui bugaddo");
 
         for (String s : caminhoImagem) {
-            if (imagem.getCaminhoImagem1() == null || imagem.getCaminhoImagem1().equals(s)) {
+            if (imagem.getCaminhoImagem1() == null ) {
                 imagem.setCaminhoImagem1(s);
-            } else if (imagem.getCaminhoImagem2() == null || imagem.getCaminhoImagem2().equals(s) ) {
+            } else if (imagem.getCaminhoImagem2() == null ) {
                 imagem.setCaminhoImagem2(s);
-            } else if (imagem.getCaminhoImagem3() == null || imagem.getCaminhoImagem3().equals(s) ) {
+            } else if (imagem.getCaminhoImagem3() == null  ) {
                 imagem.setCaminhoImagem3(s);
-            } else if (imagem.getCaminhoImagem4() == null|| imagem.getCaminhoImagem4().equals(s) ) {
+            } else if (imagem.getCaminhoImagem4() == null) {
                 imagem.setCaminhoImagem4(s);
             }
         }

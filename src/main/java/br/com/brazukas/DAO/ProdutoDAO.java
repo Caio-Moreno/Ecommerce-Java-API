@@ -160,7 +160,7 @@ public class ProdutoDAO {
     }
     public static boolean atualizarProduto(Produto produto, int id) throws IOException {
         Produto prod = null;
-        String sqlUpdate = "UPDATE PRODUTO SET NOME = ?, DESCRICAO = ?, QUALIDADE = ?, CATEGORIA = ?, STATUS = ?, PRECO = ?, PLATAFORMA = ? WHERE ID = ?";
+        String sqlUpdate = "UPDATE produto AS PRO INNER JOIN estoque AS EST ON PRO.ID = EST.ID_PRODUTO_FK SET PRO.NOME = ?, PRO.DESCRICAO = ?, PRO.QUALIDADE = ?, PRO.CATEGORIA = ?, PRO.STATUS = ?, PRO.PRECO = ?, PRO.PLATAFORMA = ?, EST.QUANTIDADE = ? WHERE PRO.ID = ?;";
         boolean inseriu = true;
         try {
 
@@ -173,7 +173,8 @@ public class ProdutoDAO {
             ps.setString(5, produto.get_statusProduto());
             ps.setDouble(6, produto.get_preco());
             ps.setString(7, produto.get_plataforma());
-            ps.setInt(8, id);
+            ps.setInt(8, produto.get_qtdEstoque());
+            ps.setInt(9, id);
             ps.execute();
         }catch (SQLException | IOException e) {
             e.printStackTrace();

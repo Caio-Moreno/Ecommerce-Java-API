@@ -2,8 +2,12 @@ package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.ProdutoDAO;
 import br.com.brazukas.Models.ProdutoAtualizar;
+import br.com.brazukas.Models.ProdutoPlataforma;
+import br.com.brazukas.Models.ProdutoStatus;
+import br.com.brazukas.Models.Responses.ProdutoPlataformaResponse;
 import br.com.brazukas.Models.Responses.ProdutoResponse;
 import br.com.brazukas.Models.Responses.ProdutoResponseDto;
+import br.com.brazukas.Models.Responses.ProdutoStatusResponse;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
 import io.swagger.annotations.ApiOperation;
@@ -115,4 +119,18 @@ public class ProdutoController {
                 }
 
             }
-        }
+
+            @ApiOperation(value = "Get Status Produto")
+            @RequestMapping(params = { "estado"}, method = RequestMethod.GET)
+            public ProdutoStatusResponse consultas(String estado) throws IOException {
+                    ProdutoStatus prod = ProdutoDAO.consultaStatus();
+                    return new ProdutoStatusResponse(200, "Status encontrado", prod);
+            }
+
+            @ApiOperation(value = "Get Status Produto")
+            @RequestMapping(params = { "plataforma"}, method = RequestMethod.GET)
+            public ProdutoPlataformaResponse plataformas(String plataforma) throws IOException {
+                ProdutoPlataforma prod = ProdutoDAO.consultaPlataforma();
+                return new ProdutoPlataformaResponse(200, "Status encontrado", prod);
+            }
+}

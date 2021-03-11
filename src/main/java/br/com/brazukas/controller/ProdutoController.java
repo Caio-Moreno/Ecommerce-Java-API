@@ -71,7 +71,7 @@ public class ProdutoController {
 
             @ApiOperation(value = "Atualiza o produto recebendo o parametro Id")
             @RequestMapping(params = {"Id"}, method = RequestMethod.PUT)
-            public ProdutoResponse atualizaCliente(@RequestBody Produto produto, int Id ) throws IOException {
+            public ProdutoResponse atualizaProduto(@RequestBody Produto produto, int Id ) throws IOException {
                 boolean inseriu = ProdutoDAO.atualizarProduto(produto, Id);
                 List<Produto> list = new ArrayList<>();
                 if(inseriu){
@@ -87,7 +87,7 @@ public class ProdutoController {
             }
             @ApiOperation(value = "Deleta o produto recebendo o parametro Id")
             @RequestMapping(params = {"Id"}, method = RequestMethod.DELETE)
-            public ProdutoResponse DeletaCliente(int Id) throws IOException {
+            public ProdutoResponse DeletaProduto(int Id) throws IOException {
                 Produto prod = ProdutoDAO.consultaProdutoPorId(Id);
 
                 if (prod == null) {

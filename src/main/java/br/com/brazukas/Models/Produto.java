@@ -19,5 +19,5 @@ public class Produto {
 	@Getter @Setter private int _qtdEstoque;
 	@Getter @Setter private double _preco;
 	@Getter @Setter private Imagem _imagem;
-	private String _plataforma;
+	@Getter @Setter private String _plataforma;
 }

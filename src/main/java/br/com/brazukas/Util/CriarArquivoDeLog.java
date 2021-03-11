@@ -15,7 +15,7 @@ public class CriarArquivoDeLog {
     public static void gravaLog(String log, String Classe, Level levelError) throws IOException {
         String logMontado = "Log -->"+ log + "  Classe -->"+ Classe;
 
-        meuLog.log(levelError, logMontado);
+//        meuLog.log(levelError, logMontado);
     }
 
 }

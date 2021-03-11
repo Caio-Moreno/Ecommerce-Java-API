@@ -158,9 +158,10 @@ public class ProdutoDAO {
     }
     public static boolean atualizarProduto(Produto produto, int id) throws IOException {
         Produto prod = null;
-        String sqlUpdate = "UPDATE PRODUTO SET NOME = ?, DESCRICAO = ?, QUALIDADE = ?, CATEGORIA = ?, STATUS = ?, PRECO = ?, PLATAFORMA = ?, IMAGEM1 = ?, IMAGEM2 = ?, IMAGEM3 = ?, IMAGEM4 = ? WHERE ID = ?";
+        String sqlUpdate = "UPDATE PRODUTO SET NOME = ?, DESCRICAO = ?, QUALIDADE = ?, CATEGORIA = ?, STATUS = ?, PRECO = ?, PLATAFORMA = ? WHERE ID = ?";
         boolean inseriu = true;
         try {
+
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlUpdate);
             ps.setString(1, produto.get_nomeProduto());
@@ -170,15 +171,12 @@ public class ProdutoDAO {
             ps.setString(5, produto.get_statusProduto());
             ps.setDouble(6, produto.get_preco());
             ps.setString(7, produto.get_plataforma());
-            ps.setString(8,produto.get_imagem().getCaminhoImagem1());
-            ps.setString(9,produto.get_imagem().getCaminhoImagem2());
-            ps.setString(10,produto.get_imagem().getCaminhoImagem3());
-            ps.setString(11,produto.get_imagem().getCaminhoImagem4());
-            ps.setInt(12, id);
+            ps.setInt(8, id);
             ps.execute();
         }catch (SQLException | IOException e) {
+            e.printStackTrace();
             inseriu = false;
-            gravaLog("Erro"+e.getMessage(), "ProdutoDAO", Level.SEVERE);
+//            gravaLog("Erro"+e.getMessage(), "ProdutoDAO", Level.SEVERE);
         }
         return inseriu;
     }
@@ -211,8 +209,14 @@ public class ProdutoDAO {
                 String imagem4 = rs.getString("IMAGEM4");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
+                Imagem imagem = Imagem.builder()
+                        .caminhoImagem1(imagem1)
+                        .caminhoImagem2(imagem2)
+                        .caminhoImagem3(imagem3)
+                        .caminhoImagem4(imagem4)
+                        .build();
 
-                produto = new Produto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, new Imagem(imagem1, imagem2, imagem3, imagem4), plataforma);
+                produto = new Produto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem, plataforma);
 
             }catch (SQLException | IOException e) {
             gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ProdutoDAO", Level.WARNING);

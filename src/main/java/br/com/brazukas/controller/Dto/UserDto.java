@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class UserDto {
-    private String _user;
+    private String _username;
     private String _password;
 }

@@ -4,6 +4,7 @@ import br.com.brazukas.Models.User;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,5 +16,5 @@ public class UserResponse {
     private int _codigo;
     private String _message;
     private List<User> _users;
-
+    private String _authenticationSid;
 }

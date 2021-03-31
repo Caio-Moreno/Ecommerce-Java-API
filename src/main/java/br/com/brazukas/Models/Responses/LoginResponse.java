@@ -1,10 +1,10 @@
 package br.com.brazukas.Models.Responses;
 
+import br.com.brazukas.Models.Login;
 import br.com.brazukas.Models.User;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,8 +12,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserResponse {
+public class LoginResponse {
     private int _codigo;
     private String _message;
-    private List<User> _users;
+    private List<Login> _users;
 }

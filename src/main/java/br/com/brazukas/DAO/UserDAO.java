@@ -2,15 +2,11 @@ package br.com.brazukas.DAO;
 
 import br.com.brazukas.Models.*;
 import br.com.brazukas.Util.ConexaoDb;
-import br.com.brazukas.controller.Dto.UserDto;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-
-import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
 public class UserDAO {
 
@@ -44,50 +40,6 @@ public class UserDAO {
             users = null;
         }
         return users;
-    }
-
-    public static User VerificaLogin(UserDto userDto) {
-        String sql = "SELECT * FROM LOGIN WHERE LOGIN = ? AND PASSWORD = ?";
-        System.out.println(sql);
-        User user = null;
-        try{
-            Connection con = ConexaoDb.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1,userDto.get_username());
-            ps.setString(2,userDto.get_password());
-            System.out.println(ps);
-            ResultSet rs = ps.executeQuery();
-
-            if(rs.next()){
-                int id = rs.getInt("ID");
-                String login = rs.getString("LOGIN");
-                String password = rs.getString("PASSWORD");
-                String permission = rs.getString("PERMISSAO");
-                int id_cliente_fk = rs.getInt("ID_CLIENTE_FK");
-                user = new User(id,login,password,permission, id_cliente_fk);
-            }
-        }catch (Exception e){
-            System.out.println("erro"+e.getMessage());
-            user = null;
-        }
-        return user;
-    }
-
-    public static boolean autenticar(String authenticationSid, int idLogin) throws IOException {
-        if(authenticationSid.isEmpty() || authenticationSid == null) return false;
-
-        String sqlUpdate = "UPDATE LOGIN SET AUTHENTICATION_SID = ? WHERE ID = ?;";
-        try {
-            Connection con = ConexaoDb.getConnection();
-            PreparedStatement ps = con.prepareStatement(sqlUpdate);
-            ps.setString(1, authenticationSid);
-            ps.setInt(2,idLogin);
-            ps.executeUpdate();
-            return true;
-        }catch (Exception e){
-            gravaLog("Erro"+e.getMessage(), "UserDAO", Level.SEVERE);
-            return false;
-        }
     }
 
     public  static User criarUsuarioBasico(UserCadastro userCadastro){

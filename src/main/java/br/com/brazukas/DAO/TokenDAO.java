@@ -86,7 +86,7 @@ public class TokenDAO {
 
     public static boolean logout(String token, boolean valido, int idCliente){
             String updateToken = "UPDATE TOKENS\n" +
-                    "SET DATE_EXPIRED = date_add(now(), interval -1 hour) \n" +
+                    "SET DATE_EXPIRED = NULL \n" +
                     "WHERE TOKEN = ?;";
             String updateUser = "UPDATE LOGIN SET TOKEN = NULL WHERE ID = ?";
             try{

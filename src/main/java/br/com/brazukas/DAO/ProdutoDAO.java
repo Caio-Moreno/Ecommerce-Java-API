@@ -25,7 +25,7 @@ public class ProdutoDAO {
         String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO,img.CAMINHO, PLATAFORMA,QUANTIDADE\n" +
                 "FROM PRODUTO prod\n" +
                 "INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK\n" +
-                "INNER JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK\n" +
+                "LEFT JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK\n" +
                 "WHERE STATUS = 'A';";
 
         try {
@@ -138,7 +138,7 @@ public class ProdutoDAO {
         }
     }
     public static  ProdutoDto retornarUltimoProduto() throws IOException {
-        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK order by prod.ID desc limit 1;";
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK order by prod.ID desc limit 1;";
         ProdutoDto produto = null;
         try {
             Connection con = ConexaoDb.getConnection();
@@ -153,10 +153,10 @@ public class ProdutoDAO {
                 String categoria = rs.getString("CATEGORIA");
                 String statusProduto = rs.getString("STATUS");
                 double preco = rs.getDouble("PRECO");
-                String imagem1 = rs.getString("IMAGEM1");
+                //String imagem1 = rs.getString("IMAGEM1");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
-                produto = new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem1, plataforma);
+                produto = new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, null, plataforma);
                 gravaLog("" + produto, "ProdutoDAO", Level.WARNING);
             }
         }catch (Exception e){
@@ -191,8 +191,14 @@ public class ProdutoDAO {
     }
     public static Produto consultaProdutoPorId(int id) throws IOException {
         Produto produto = null;
+        Imagem imagem = new Imagem();
+        boolean existeImagem = false;
+        int i = 1;
 
-        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,IMAGEM2,IMAGEM3,IMAGEM4,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK WHERE prod.ID = ?;";
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA,QUANTIDADE \n" +
+                "FROM PRODUTO prod \n" +
+                "INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK\n" +
+                "WHERE prod.ID = ?;";
         String sqlImagens = "SELECT CAMINHO FROM IMAGENS WHERE ID_PRODUTO_FK = ?;";
 
         try {
@@ -206,6 +212,7 @@ public class ProdutoDAO {
             ResultSet rs2 = ps2.executeQuery();
 
             System.out.println(ps);
+            System.out.println(ps2);
 
             rs.next();
 
@@ -216,17 +223,14 @@ public class ProdutoDAO {
                 String categoria = rs.getString("CATEGORIA");
                 String statusProduto = rs.getString("STATUS");
                 double preco = rs.getDouble("PRECO");
-
-                String imagem1 = rs.getString("IMAGEM1");
-                String imagem2 = rs.getString("IMAGEM2");
-                String imagem3 = rs.getString("IMAGEM3");
-                String imagem4 = rs.getString("IMAGEM4");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
 
-                int i = 1;
-                Imagem imagem = new Imagem();
+
+
                 while (rs2.next()){
+                    System.out.println("ENTREI");
+                    existeImagem = true;
                     switch (i){
                         case 1 : imagem.setCaminhoImagem1(rs2.getString("CAMINHO"));
                             i++;
@@ -243,6 +247,9 @@ public class ProdutoDAO {
                     }
                 }
 
+                if(!existeImagem){
+                    imagem = null;
+                }
                 produto = new Produto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem, plataforma);
 
             }catch (SQLException | IOException e) {

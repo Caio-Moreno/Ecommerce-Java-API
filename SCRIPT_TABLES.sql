@@ -218,7 +218,7 @@ ADD CONSTRAINT `FK_TELEFONE`
   ON UPDATE NO ACTION;
 
 
-DROP EVENT limparTokens;
+DROP EVENT IF EXISTS limparTokens;
 
 SET GLOBAL event_scheduler = ON;
 

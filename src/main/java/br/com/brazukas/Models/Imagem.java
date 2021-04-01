@@ -1,14 +1,12 @@
 package br.com.brazukas.Models;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
 public class Imagem {
 
 

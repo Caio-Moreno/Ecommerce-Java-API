@@ -60,8 +60,10 @@ public class ProdutoController {
     @ApiOperation(value = "Insere um produto")
     @RequestMapping(method =  RequestMethod.POST)
     public ProdutoResponseDto InserirProduto(@RequestBody Produto produto) throws IOException, SQLException {
+                System.out.println("INSERE PRODUTO()");
                 boolean inseriu = ProdutoDAO.inserirProduto(produto);
                 List<ProdutoDto> list = new ArrayList<>();
+
 
                 if(inseriu) {
                     ProdutoDto prod =  ProdutoDAO.retornarUltimoProduto();
@@ -98,7 +100,7 @@ public class ProdutoController {
                     return new ProdutoResponse(404, "Produto não encontrado na base", null);
                 }
 
-                boolean deletou = ProdutoDAO.deletarCliente(Id);
+                boolean deletou = ProdutoDAO.deletarProduto(Id);
 
                 if(deletou){
                     return new ProdutoResponse(200, "Produto deletado com sucesso", null);

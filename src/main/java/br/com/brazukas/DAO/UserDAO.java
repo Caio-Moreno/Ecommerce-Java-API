@@ -11,7 +11,7 @@ import java.util.List;
 public class UserDAO {
 
     public static List<User> consultaUsuarios() throws IOException {
-        String sql = "SELECT * FROM LOGIN";
+        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO FROM USUARIO";
         System.out.println(sql);
         List<User> users = new ArrayList<>();
         System.out.println(sql);
@@ -28,8 +28,7 @@ public class UserDAO {
                 String login = rs.getString("LOGIN");
                 String password = rs.getString("PASSWORD");
                 String permission = rs.getString("PERMISSAO");
-                int id_cliente_fk = rs.getInt("ID_CLIENTE_FK");
-                users.add(new User(id,login,password,permission, id_cliente_fk));
+                users.add(new User(id,login,password,permission));
             }
             for (User u: users) {
                 System.out.println("-----"+u);
@@ -44,16 +43,17 @@ public class UserDAO {
 
     public  static User criarUsuarioBasico(UserCadastro userCadastro){
         User user = null;
-        String sqlInsertCliente = "INSERT INTO CLIENTE(ID, NOME, TELEFONE, EMAIL) VALUES(DEFAULT, ?, ?,?);";
-        String loginInsert = "INSERT INTO LOGIN(ID, LOGIN, PASSWORD, PERMISSAO, ID_CLIENTE_FK) VALUES(DEFAULT, ?,?,?,?)";
+        String sqlInsertCliente = "insert into USUARIO(ID,NOME,EMAIL, PASSWORD, PERMISSAO) VALUES(DEFAULT, ?, ?, ?, ?);";
+        String telefoneInsert = "insert into CLIENTE_TELEFONE(ID_CLIENTE_FK, TELEFONE) VALUES(?,?);";
         int idCliente = 0;
 
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlInsertCliente, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1,userCadastro.get_name());
-            ps.setString(2,userCadastro.get_phone());
-            ps.setString(3,userCadastro.get_email());
+            ps.setString(2,userCadastro.get_email());
+            ps.setString(3,userCadastro.get_password());
+            ps.setString(4,userCadastro.get_permission());
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if(rs.next()){
@@ -67,18 +67,16 @@ public class UserDAO {
 
         try {
             Connection con = ConexaoDb.getConnection();
-            PreparedStatement ps = con.prepareStatement(loginInsert);
-            ps.setString(1,userCadastro.get_login());
-            ps.setString(2,userCadastro.get_password());
-            ps.setString(3,userCadastro.get_permission());
-            ps.setInt(4,idCliente);
+            PreparedStatement ps = con.prepareStatement(telefoneInsert);
+            ps.setInt(1,idCliente);
+            ps.setString(2,userCadastro.get_phone());
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println("Erro para inserir user"+e.getMessage());
             user = null;
         }
 
-        String sql = "SELECT * FROM LOGIN WHERE ID_CLIENTE_FK = ?";
+        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO FROM USUARIO WHERE ID = ?;";
         try{
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
@@ -91,8 +89,7 @@ public class UserDAO {
                 String login = rs.getString("LOGIN");
                 String password = rs.getString("PASSWORD");
                 String permission = rs.getString("PERMISSAO");
-                int id_cliente_fk = rs.getInt("ID_CLIENTE_FK");
-                user = new User(id,login,password,permission, id_cliente_fk);
+                user = new User(id,login,password,permission);
             }
         }catch (Exception e){
             System.out.println("erro"+e.getMessage());

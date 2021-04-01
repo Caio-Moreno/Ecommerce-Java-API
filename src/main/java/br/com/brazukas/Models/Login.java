@@ -10,9 +10,8 @@ import lombok.*;
 @ToString
 public class Login {
     private int _id;
-    private String _login;
+    private String _email;
     private String _password;
     private String _permission;
     private String _token;
-    private int _idCliente;
 }

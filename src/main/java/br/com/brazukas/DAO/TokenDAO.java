@@ -58,7 +58,7 @@ public class TokenDAO {
         if(token.isEmpty() || token == null) return false;
         System.out.println("Tokengerado----->"+token);
         String sqlInsert = "INSERT INTO TOKENS(ID, TOKEN, DATE_EXPIRED) VALUES(DEFAULT, ?, date_add(now(), interval 4 hour));";
-        String sqlUpdate = "UPDATE LOGIN SET TOKEN = ? WHERE ID = ?;";
+        String sqlUpdate = "UPDATE USUARIO SET TOKEN = ? WHERE ID = ?;";
 
         try {
             Connection con = ConexaoDb.getConnection();
@@ -88,7 +88,7 @@ public class TokenDAO {
             String updateToken = "UPDATE TOKENS\n" +
                     "SET DATE_EXPIRED = NULL \n" +
                     "WHERE TOKEN = ?;";
-            String updateUser = "UPDATE LOGIN SET TOKEN = NULL WHERE ID = ?";
+            String updateUser = "UPDATE USUARIO SET TOKEN = NULL WHERE ID = ?";
             try{
                 Connection con = ConexaoDb.getConnection();
                 PreparedStatement ps = con.prepareStatement(updateUser);

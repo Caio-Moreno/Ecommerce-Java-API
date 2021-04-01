@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 @ToString
 public class UserCadastro {
     private String _name;
-    private String _login;
     private String _email;
     private String _phone;
     private String _permission;

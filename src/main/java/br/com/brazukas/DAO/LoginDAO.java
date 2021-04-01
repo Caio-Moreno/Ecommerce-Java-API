@@ -10,8 +10,9 @@ import java.sql.ResultSet;
 
 public class LoginDAO {
     public static Login VerificaLogin(LoginDto loginDto) {
-        String sql = "SELECT * FROM LOGIN WHERE LOGIN = ? AND PASSWORD = ?";
-        System.out.println(sql);
+        System.out.println(loginDto);
+        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO, TOKEN FROM USUARIO WHERE EMAIL = ? AND PASSWORD = ?";
+        //System.out.println(sql);
         Login login = null;
         try{
             Connection con = ConexaoDb.getConnection();
@@ -23,12 +24,11 @@ public class LoginDAO {
 
             if(rs.next()){
                 int id = rs.getInt("ID");
-                String loginR = rs.getString("LOGIN");
+                String loginResponse = rs.getString("LOGIN");
                 String password = rs.getString("PASSWORD");
                 String permission = rs.getString("PERMISSAO");
                 String token = rs.getString("TOKEN");
-                int id_cliente_fk = rs.getInt("ID_CLIENTE_FK");
-                login = new Login(id, loginR,password,permission,token,id_cliente_fk);
+                login = new Login(id, loginResponse,password,permission,token);
             }
         }catch (Exception e){
             System.out.println("erro"+e.getMessage());

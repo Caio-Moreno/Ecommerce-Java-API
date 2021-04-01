@@ -22,7 +22,11 @@ public class ProdutoDAO {
         List<ProdutoDto> listaProdutos = new ArrayList<>();
 
 
-        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK WHERE STATUS = 'A';";
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO,img.CAMINHO, PLATAFORMA,QUANTIDADE\n" +
+                "FROM PRODUTO prod\n" +
+                "INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK\n" +
+                "INNER JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK\n" +
+                "WHERE STATUS = 'A';";
 
         try {
 
@@ -40,10 +44,10 @@ public class ProdutoDAO {
                 String categoria = rs.getString("CATEGORIA");
                 String statusProduto = rs.getString("STATUS");
                 double preco = rs.getDouble("PRECO");
-                String imagem1 = rs.getString("IMAGEM1");
+                String caminho = rs.getString("CAMINHO");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
-                listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem1, plataforma));
+                listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
                 for (ProdutoDto prod : listaProdutos) {
                     gravaLog("Abrindo produto", "ProdutoDAO", Level.WARNING);
                     gravaLog("" + prod, "ProdutoDAO", Level.WARNING);
@@ -62,7 +66,7 @@ public class ProdutoDAO {
 
         gravaLog("Consulta produto por nome" + nomeProduto, "ProdutoDAO", Level.INFO);
 
-        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,IMAGEM2,IMAGEM3,IMAGEM4,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK WHERE NOME = ?;";
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK WHERE NOME = ?;";
 
         try {
 
@@ -101,8 +105,9 @@ public class ProdutoDAO {
     }
 
     public static boolean inserirProduto(Produto produto) throws SQLException, IOException {
+        System.out.println("INSERE PRODUTO DAO()");
         gravaLog("Inserir produto" + produto, "ProdutoDAO", Level.WARNING);
-        Imagem imagem = produto.get_imagem();
+        //Imagem imagem = produto.get_imagem();
         String sqlInsert = "INSERT INTO PRODUTO(ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA) VALUES(DEFAULT, ?, ?,?, ?, ?, ?,?);";
         String sqlInsertEstoque = "INSERT INTO ESTOQUE(ID, ID_PRODUTO_FK, QUANTIDADE) VALUES(DEFAULT, LAST_INSERT_ID(), ?);";
 
@@ -127,6 +132,7 @@ public class ProdutoDAO {
             insertEstoque.execute();
             return true;
         } catch (SQLException e) {
+            System.out.println("INSERE PRODUTO DAO()"+e.getMessage());
             gravaLog(e.getMessage(), "ProdutoInsertDAO", Level.SEVERE);
             return false;
         }
@@ -187,13 +193,17 @@ public class ProdutoDAO {
         Produto produto = null;
 
         String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,IMAGEM2,IMAGEM3,IMAGEM4,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK WHERE prod.ID = ?;";
+        String sqlImagens = "SELECT CAMINHO FROM IMAGENS WHERE ID_PRODUTO_FK = ?;";
 
         try {
 
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            PreparedStatement ps2 = con.prepareStatement(sqlImagens);
             ps.setInt(1, id);
+            ps2.setInt(1, id);
             ResultSet rs = ps.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
 
             System.out.println(ps);
 
@@ -206,18 +216,32 @@ public class ProdutoDAO {
                 String categoria = rs.getString("CATEGORIA");
                 String statusProduto = rs.getString("STATUS");
                 double preco = rs.getDouble("PRECO");
+
                 String imagem1 = rs.getString("IMAGEM1");
                 String imagem2 = rs.getString("IMAGEM2");
                 String imagem3 = rs.getString("IMAGEM3");
                 String imagem4 = rs.getString("IMAGEM4");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
-                Imagem imagem = Imagem.builder()
-                        .caminhoImagem1(imagem1)
-                        .caminhoImagem2(imagem2)
-                        .caminhoImagem3(imagem3)
-                        .caminhoImagem4(imagem4)
-                        .build();
+
+                int i = 1;
+                Imagem imagem = new Imagem();
+                while (rs2.next()){
+                    switch (i){
+                        case 1 : imagem.setCaminhoImagem1(rs2.getString("CAMINHO"));
+                            i++;
+                            break;
+                        case 2 :  imagem.setCaminhoImagem2(rs2.getString("CAMINHO"));
+                            i++;
+                            break;
+                        case 3 :  imagem.setCaminhoImagem3(rs2.getString("CAMINHO"));
+                            i++;
+                            break;
+                        case 4 :  imagem.setCaminhoImagem4(rs2.getString("CAMINHO"));
+                            i++;
+                            break;
+                    }
+                }
 
                 produto = new Produto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem, plataforma);
 
@@ -227,19 +251,19 @@ public class ProdutoDAO {
         return produto;
     }
 
-    public static boolean deletarCliente(int id) throws IOException {
-        gravaLog("DeletarCliente"+id,"ProdutoDAO", Level.SEVERE);
+    public static boolean deletarProduto(int id) throws IOException {
+        gravaLog("DeletarProduto"+id,"ProdutoDAO", Level.SEVERE);
         String sqlDelete = "DELETE FROM PRODUTO WHERE ID = ?";
         boolean deletou = true;
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlDelete);
             ps.setInt(1,id);
-            gravaLog("DeletarCliente"+ps,"ProdutoDAO", Level.SEVERE);
+            gravaLog("DeletarProduto"+ps,"ProdutoDAO", Level.SEVERE);
             ps.execute();
 
         }catch (Exception e){
-            gravaLog("DeletarCliente erro"+e.getMessage(),"ProdutoDAO", Level.SEVERE);
+            gravaLog("DeletarProduto erro"+e.getMessage(),"ProdutoDAO", Level.SEVERE);
             deletou = false;
         }
         return  deletou;
@@ -279,7 +303,10 @@ public class ProdutoDAO {
 
     public static List<ProdutoDto> consultarProdutoGeral() throws SQLException, IOException {
         List<ProdutoDto> listaProdutos = new ArrayList<>();
-        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO, PLATAFORMA, IMAGEM1,QUANTIDADE FROM PRODUTO prod INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK";
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO,img.CAMINHO, PLATAFORMA,QUANTIDADE\n" +
+                "FROM PRODUTO prod\n" +
+                "INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK\n" +
+                "INNER JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK";
 
         try {
 

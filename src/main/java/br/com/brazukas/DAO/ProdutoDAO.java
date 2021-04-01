@@ -19,6 +19,8 @@ import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 public class ProdutoDAO {
 
     public static List<ProdutoDto> consultarProduto() throws SQLException, IOException {
+        int i = 1;
+        boolean jaExiste = false;
         List<ProdutoDto> listaProdutos = new ArrayList<>();
 
 
@@ -32,6 +34,7 @@ public class ProdutoDAO {
 
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            System.out.println(ps);
             ResultSet rs = ps.executeQuery();
 
             gravaLog("Consulta produto" + ps, "ProdutoDAO", Level.INFO);
@@ -47,11 +50,31 @@ public class ProdutoDAO {
                 String caminho = rs.getString("CAMINHO");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
-                listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
-                for (ProdutoDto prod : listaProdutos) {
-                    gravaLog("Abrindo produto", "ProdutoDAO", Level.WARNING);
-                    gravaLog("" + prod, "ProdutoDAO", Level.WARNING);
+
+                System.out.println("CODIGO RETORNADO DA PASSAGEM --->"+i+"----"+codProduto);
+
+
+                if(i == 1) {
+                    System.out.println("PASSEI PRIMEIRA VEZ"+codProduto);
+                    listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
+                }else {
+                    for (ProdutoDto prod : listaProdutos) {
+                        if ((prod.get_idProduto() == codProduto)) {
+                            System.out.println("Produto já existe"+prod.get_idProduto());
+                            jaExiste = true;
+                            break;
+                        }else{
+                            jaExiste = false;
+                        }
+                    }
+                    System.out.println("Valor do jaExiste"+jaExiste);
+                    if(!jaExiste){
+                        System.out.println("Vou adicionar pois o valor do ja existe"+jaExiste);
+                        listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
+                    }
                 }
+
+                i++;
             }
 
         } catch (SQLException | IOException e) {
@@ -310,10 +333,12 @@ public class ProdutoDAO {
 
     public static List<ProdutoDto> consultarProdutoGeral() throws SQLException, IOException {
         List<ProdutoDto> listaProdutos = new ArrayList<>();
+        int i = 1;
+        boolean jaExiste = false;
         String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO,img.CAMINHO, PLATAFORMA,QUANTIDADE\n" +
                 "FROM PRODUTO prod\n" +
                 "INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK\n" +
-                "INNER JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK";
+                "LEFT JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK";
 
         try {
 
@@ -331,14 +356,34 @@ public class ProdutoDAO {
                 String categoria = rs.getString("CATEGORIA");
                 String statusProduto = rs.getString("STATUS");
                 double preco = rs.getDouble("PRECO");
-                String imagem1 = rs.getString("IMAGEM1");
+                String caminho = rs.getString("CAMINHO");
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
-                listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, imagem1, plataforma));
-                for (ProdutoDto prod : listaProdutos) {
-                    gravaLog("Abrindo produto", "ProdutoDAO", Level.WARNING);
-                    gravaLog("" + prod, "ProdutoDAO", Level.WARNING);
+
+                System.out.println("CODIGO RETORNADO DA PASSAGEM --->"+i+"----"+codProduto);
+
+
+                if(i == 1) {
+                    System.out.println("PASSEI PRIMEIRA VEZ"+codProduto);
+                    listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
+                }else {
+                    for (ProdutoDto prod : listaProdutos) {
+                        if ((prod.get_idProduto() == codProduto)) {
+                            System.out.println("Produto já existe"+prod.get_idProduto());
+                            jaExiste = true;
+                            break;
+                        }else{
+                            jaExiste = false;
+                        }
+                    }
+                    System.out.println("Valor do jaExiste"+jaExiste);
+                    if(!jaExiste){
+                        System.out.println("Vou adicionar pois o valor do ja existe"+jaExiste);
+                        listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
+                    }
                 }
+
+                i++;
             }
 
         } catch (SQLException | IOException e) {

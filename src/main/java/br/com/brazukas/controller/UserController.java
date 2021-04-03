@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.brazukas.Util.ConverteSenhaParaMd5.convertToMd5;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/Users")
@@ -32,7 +34,7 @@ public class UserController {
         if(userCadastro == null){
             return new UserResponse(503, "Erro para processar a solicitação(Valor do usuário é null)", null);
         }
-        userCadastro.set_password(LoginController.convertToMd5(userCadastro.get_password()));
+        userCadastro.set_password(convertToMd5(userCadastro.get_password()));
 
         User user = UserDAO.criarUsuarioBasico(userCadastro);
 

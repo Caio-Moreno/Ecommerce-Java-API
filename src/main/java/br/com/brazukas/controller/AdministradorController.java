@@ -83,12 +83,12 @@ public class AdministradorController {
         if(inseriu){
             var user = UsuarioInternoDAO.consultaUsuarioPorId(Id);
             if (user == null) {
-                return new UserAlterarResponse(404, "Produto não encontrado na base", null);
+                return new UserAlterarResponse(404, "Usuario não encontrado na base", null);
             }
             list.add(user);
-            return new UserAlterarResponse(200, "Produto atualizado com sucesso", list);
+            return new UserAlterarResponse(200, "Usuario atualizado com sucesso", list);
         }else{
-            return new UserAlterarResponse(500, "Erro para atualizar o produto", null);
+            return new UserAlterarResponse(500, "Erro para atualizar o usuario", null);
         }
     }
 

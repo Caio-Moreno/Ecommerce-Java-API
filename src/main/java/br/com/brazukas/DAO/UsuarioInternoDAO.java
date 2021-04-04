@@ -31,7 +31,7 @@ public class UsuarioInternoDAO {
         List<UsuarioInternoDto> listaUsuariosInterno = new ArrayList<>();
 
 
-        String sqlConsulta = "SELECT NOME,PERMISSAO,STATUS FROM brazukas.usuario WHERE STATUS = 'A' and PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
+        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM brazukas.usuario WHERE STATUS = 'A' and PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
 
         try {
 
@@ -44,6 +44,7 @@ public class UsuarioInternoDAO {
 
             while (rs.next()) {
                 UsuarioInternoDto usuarioInternoDto = UsuarioInternoDto.builder()
+                        ._id(rs.getInt("ID"))
                         ._nomeUsuarioInterno(rs.getString("NOME"))
                         ._tipoUsuarioInternoEnum(TipoUsuarioInternoEnum.valueOf(rs.getString("PERMISSAO")))
                         ._statusEnum(StatusEnum.valueOf(rs.getString("STATUS")))
@@ -88,7 +89,7 @@ public class UsuarioInternoDAO {
         List<UsuarioInternoDto> listaUsuariosInterno = new ArrayList<>();
 
 
-        String sqlConsulta = "SELECT NOME,PERMISSAO,STATUS FROM brazukas.usuario WHERE  PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
+        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM brazukas.usuario WHERE  PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
 
         try {
 
@@ -101,6 +102,7 @@ public class UsuarioInternoDAO {
 
             while (rs.next()) {
                 UsuarioInternoDto usuarioInternoDto = UsuarioInternoDto.builder()
+                        ._id(rs.getInt("ID"))
                         ._nomeUsuarioInterno(rs.getString("NOME"))
                         ._tipoUsuarioInternoEnum(TipoUsuarioInternoEnum.valueOf(rs.getString("PERMISSAO")))
                         ._statusEnum(StatusEnum.valueOf(rs.getString("STATUS")))

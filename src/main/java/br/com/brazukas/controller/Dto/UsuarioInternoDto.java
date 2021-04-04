@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UsuarioInternoDto {
+    private int _id;
     private String _nomeUsuarioInterno;
     private TipoUsuarioInternoEnum _tipoUsuarioInternoEnum;
     private StatusEnum _statusEnum;

@@ -35,16 +35,6 @@ public class AdministradorController {
         List<UsuarioInternoDto> listaUsuarios = UsuarioInternoDAO.listarUsuariosInterno();
         return new UserAdminOrEstoquistaResponse(200,listaUsuarios.size()+" Produtos encontrados", listaUsuarios);
     }
-    
-    @ApiOperation(value = "Retorna uma lista de usuarios filtros por ID")
-    @RequestMapping(params = {"Id"}, method = RequestMethod.GET)
-    public UserAlterarResponse ListaUsuariosPorId(int Id) throws IOException {
-    	UserAlterar user =  UsuarioInternoDAO.consultaUsuarioPorId(Id);
-
-        List<UserAlterar> listaFuncionarios = new ArrayList<>();
-        listaFuncionarios.add(user);
-        return new UserAlterarResponse(200, listaFuncionarios.size()+" Produtos encontrados", listaFuncionarios);
-    }
 
 
 

@@ -31,7 +31,7 @@ public class UsuarioInternoDAO {
         List<UsuarioInternoDto> listaUsuariosInterno = new ArrayList<>();
 
 
-        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM brazukas.usuario WHERE STATUS = 'A' and PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
+        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM USUARIO WHERE STATUS = 'A' and PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
 
         try {
 
@@ -89,7 +89,7 @@ public class UsuarioInternoDAO {
         List<UsuarioInternoDto> listaUsuariosInterno = new ArrayList<>();
 
 
-        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM brazukas.usuario WHERE  PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
+        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM USUARIO WHERE  PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
 
         try {
 
@@ -142,7 +142,7 @@ public class UsuarioInternoDAO {
 
     public static boolean atualizaStatus(int id, String status) throws IOException {
         String sql = "UPDATE USUARIO SET STATUS = ? WHERE ID = ?";
-        String sqlBusca = "SELECT  1 as existe FROM usuario WHERE id = ?;";
+        String sqlBusca = "SELECT  1 as existe FROM USUARIO WHERE id = ?;";
         int temUser = 0;
         try {
             Connection con = ConexaoDb.getConnection();
@@ -159,9 +159,11 @@ public class UsuarioInternoDAO {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, status);
             ps.setInt(2, id);
+            System.out.println(ps);
             ps.executeUpdate();
             return true;
         } catch (Exception e) {
+            System.out.println("Erro"+e.getMessage());
             gravaLog("ERRO PARA ATUALIZAR STATUS" + e.getMessage(), "USUARIODAO", Level.SEVERE);
         }
         return false;
@@ -169,7 +171,7 @@ public class UsuarioInternoDAO {
 
     public static boolean atualizarUsuarioInterno(UserAlterar userAlterar, int id) throws IOException {
         Produto prod = null;
-        String sqlUpdate = "UPDATE usuario SET NOME = ?,PASSWORD = ?, PERMISSAO = ?  WHERE ID = ?";
+        String sqlUpdate = "UPDATE USUARIO SET NOME = ?,PASSWORD = ?, PERMISSAO = ?  WHERE ID = ?";
         boolean inseriu = true;
         try {
 
@@ -192,7 +194,7 @@ public class UsuarioInternoDAO {
         boolean existeImagem = false;
         int i = 1;
 
-        String sqlConsulta = "SELECT NOME,PASSWORD,PERMISSAO FROM brazukas.usuario WHERE ID = ?;";
+        String sqlConsulta = "SELECT NOME,PASSWORD,PERMISSAO FROM USUARIO WHERE ID = ?;";
 
         try {
 
@@ -218,7 +220,7 @@ public class UsuarioInternoDAO {
 
     public static boolean inserirUsuarioInterno(UsuarioInterno usuarioInterno) throws IOException, SQLException {
 
-        String sqlInserir = "INSERT INTO `brazukas`.`usuario` (`ID`,`NOME`, `CPF`, `SEXO`, `DATANASCIMENTO`, `EMAIL`, `PASSWORD`, `PERMISSAO`,  `STATUS`)" +
+        String sqlInserir = "INSERT INTO USUARIO (`ID`,`NOME`, `CPF`, `SEXO`, `DATANASCIMENTO`, `EMAIL`, `PASSWORD`, `PERMISSAO`,  `STATUS`)" +
                 " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?,  ?);";
 
         try {
@@ -245,7 +247,7 @@ public class UsuarioInternoDAO {
         }
     }
     public static UsuarioInterno retornarUltimoUsuarioInterno() throws IOException {
-        String sqlConsulta = "SELECT  ID, NOME, CPF, SEXO, DATANASCIMENTO, EMAIL, PASSWORD, PERMISSAO, STATUS FROM usuario  order by ID desc limit 1;";
+        String sqlConsulta = "SELECT  ID, NOME, CPF, SEXO, DATANASCIMENTO, EMAIL, PASSWORD, PERMISSAO, STATUS FROM USUARIO  order by ID desc limit 1;";
         UsuarioInterno usuarioInterno = null;
         try {
             Connection con = ConexaoDb.getConnection();

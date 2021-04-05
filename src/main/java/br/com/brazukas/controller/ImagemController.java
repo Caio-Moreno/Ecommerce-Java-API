@@ -34,16 +34,24 @@ public class ImagemController {
 
         for (String s : caminhoImagem) {
             if (imagem.getCaminhoImagem1() == null ) {
+                System.out.println("foreach");
                 imagem.setCaminhoImagem1(s);
             } else if (imagem.getCaminhoImagem2() == null ) {
+                System.out.println("foreach");
                 imagem.setCaminhoImagem2(s);
             } else if (imagem.getCaminhoImagem3() == null  ) {
+                System.out.println("foreach");
                 imagem.setCaminhoImagem3(s);
             } else if (imagem.getCaminhoImagem4() == null) {
+                System.out.println("foreach");
                 imagem.setCaminhoImagem4(s);
             }
         }
 
+        System.out.println(imagem.getCaminhoImagem1());
+        System.out.println(imagem.getCaminhoImagem2());
+        System.out.println(imagem.getCaminhoImagem3());
+        System.out.println(imagem.getCaminhoImagem4());
 
         ImagemDAO.inserirImagens(imagem,id);
 

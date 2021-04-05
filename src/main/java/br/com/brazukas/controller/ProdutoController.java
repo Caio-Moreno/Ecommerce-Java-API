@@ -62,8 +62,10 @@ public class ProdutoController {
 
     @ApiOperation(value = "Insere um produto")
     @RequestMapping(method =  RequestMethod.POST)
-    public ProdutoResponseDto InserirProduto(@RequestBody Produto produto, @RequestHeader("TOKEN") String meuToken) throws IOException, SQLException {
-                System.out.println("INSERE PRODUTO()"+meuToken);
+    public ResponseEntity<?> InserirProduto(@RequestBody Produto produto, @RequestHeader("TOKEN") String meuToken) throws IOException, SQLException {
+
+                if(!TokenController.isValid(meuToken)) return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401,"Token inválido","Lista produtos por ID", "/Produtos{Id}"));
+
                 boolean inseriu = ProdutoDAO.inserirProduto(produto);
                 List<ProdutoDto> list = new ArrayList<>();
 
@@ -71,10 +73,9 @@ public class ProdutoController {
                 if(inseriu) {
                     ProdutoDto prod =  ProdutoDAO.retornarUltimoProduto();
                     list.add(prod);
-                    return  new ProdutoResponseDto(200,"Produto inserido com sucesso",list);
+                    return ResponseEntity.status(HttpStatus.OK).body(new ProdutoResponseDto(200,"Produto inserido com sucesso",list));
                 }else{
-
-                    return new ProdutoResponseDto(500,"Erro para inserir o produto",null);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ProdutoResponseDto(500,"Erro para inserir o produto",null));
                 }
             }
 

@@ -6,7 +6,10 @@ import br.com.brazukas.Models.*;
 import br.com.brazukas.Models.Responses.*;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.controller.Dto.UsuarioInternoDto;
+import com.sun.el.parser.Token;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -48,7 +51,7 @@ public class AdministradorController {
 
 
 
-    @ApiOperation(value = "Insere um produto")
+    @ApiOperation(value = "Insere um cliente")
     @RequestMapping(method =  RequestMethod.POST)
     public UsuarioInternoInserirResponse InserirUserInterno(@RequestBody UsuarioInterno usuarioInterno) throws IOException, SQLException {
 
@@ -57,6 +60,8 @@ public class AdministradorController {
         }
         usuarioInterno.set_password(convertToMd5(usuarioInterno.get_password()));
 
+        usuarioInterno.set_cpf(usuarioInterno.get_cpf().replace(".", "").replace("-", ""));
+
         boolean inseriu = UsuarioInternoDAO.inserirUsuarioInterno(usuarioInterno);
         List<UsuarioInterno> list = new ArrayList<>();
 
@@ -64,7 +69,7 @@ public class AdministradorController {
         if(inseriu) {
             var ultimoUsuarioInterno =  UsuarioInternoDAO.retornarUltimoUsuarioInterno();
             list.add(ultimoUsuarioInterno);
-            return  new UsuarioInternoInserirResponse(200,"Produto inserido com sucesso",list);
+            return  new UsuarioInternoInserirResponse(200,"Usuário inserido com sucesso",list);
         }else{
 
             return new UsuarioInternoInserirResponse(500,"Erro para inserir o produto",null);
@@ -73,9 +78,12 @@ public class AdministradorController {
 
     @ApiOperation(value = "Atualiza o usúario recebendo o parametro Id")
     @RequestMapping(params = {"Id"}, method = RequestMethod.PUT)
-    public UserAlterarResponse atualizaUser(@RequestBody UserAlterar userAlterar, int Id ) throws IOException {
+    public ResponseEntity<?> atualizaUser(@RequestBody UserAlterar userAlterar, int Id , @RequestHeader("TOKEN") String token) throws IOException {
+
+        if(!(TokenController.isValid(token))) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "atualiza usuario por id", "/administrador?Id={id}"));
+
         if(userAlterar == null){
-            return new UserAlterarResponse(503, "Erro para processar a solicitação(Valor do usuário é null)", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserAlterarResponse(503, "Erro para processar a solicitação(Valor do usuário é null)", null));
         }
         userAlterar.set_password(convertToMd5(userAlterar.get_password()));
         boolean inseriu = UsuarioInternoDAO.atualizarUsuarioInterno(userAlterar, Id);
@@ -83,12 +91,12 @@ public class AdministradorController {
         if(inseriu){
             var user = UsuarioInternoDAO.consultaUsuarioPorId(Id);
             if (user == null) {
-                return new UserAlterarResponse(404, "Usuario não encontrado na base", null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserAlterarResponse(404, "Usuario não encontrado na base", null));
             }
             list.add(user);
-            return new UserAlterarResponse(200, "Usuario atualizado com sucesso", list);
+            return ResponseEntity.status(HttpStatus.OK).body(new UserAlterarResponse(200, "Usuario atualizado com sucesso", list));
         }else{
-            return new UserAlterarResponse(500, "Erro para atualizar o usuario", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserAlterarResponse(500, "Erro para atualizar o usuario", null));
         }
     }
 

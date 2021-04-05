@@ -236,7 +236,7 @@ public class UsuarioInternoDAO {
             ps.setString(6, usuarioInterno.get_password());
             ps.setString(7, usuarioInterno.get_tipoUser().getTipo());
             ps.setString(8, usuarioInterno.get_status().getStatus());
-
+            System.out.println(ps);
             ps.execute();
 
             return true;

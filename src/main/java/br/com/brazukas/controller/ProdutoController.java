@@ -4,13 +4,12 @@ import br.com.brazukas.DAO.ProdutoDAO;
 import br.com.brazukas.Models.ProdutoAtualizar;
 import br.com.brazukas.Models.ProdutoPlataforma;
 import br.com.brazukas.Models.ProdutoStatus;
-import br.com.brazukas.Models.Responses.ProdutoPlataformaResponse;
-import br.com.brazukas.Models.Responses.ProdutoResponse;
-import br.com.brazukas.Models.Responses.ProdutoResponseDto;
-import br.com.brazukas.Models.Responses.ProdutoStatusResponse;
+import br.com.brazukas.Models.Responses.*;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -40,27 +39,31 @@ public class ProdutoController {
 
     @ApiOperation(value = "Retorna uma lista de produtos filtros por nome")
     @RequestMapping(params = {"Nome"}, method = RequestMethod.GET)
-    public ProdutoResponse ListaProdutosPorNome(String Nome) throws IOException {
+    public ResponseEntity<ProdutoResponse> ListaProdutosPorNome(String Nome) throws IOException {
         List<Produto> listaProdutos =  ProdutoDAO.consultaProdutoPorNome(Nome);
 
 
-        return new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos);
+        return ResponseEntity.ok().body(new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos));
     }
 
     @ApiOperation(value = "Retorna uma lista de produtos filtros por ID")
     @RequestMapping(params = {"Id"}, method = RequestMethod.GET)
-    public ProdutoResponse ListaProdutosPorid(int Id) throws IOException {
+    public ResponseEntity<?> ListaProdutosPorid(int Id, @RequestHeader("TOKEN") String meuToken) throws IOException {
+        System.out.println("MEU TOKEN"+meuToken);
+
+        if(!TokenController.isValid(meuToken)) return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401,"Token inválido","Lista produtos por ID", "/Produtos{Id}"));
+
         Produto prod =  ProdutoDAO.consultaProdutoPorId(Id);
 
         List<Produto> listaProdutos = new ArrayList<>();
         listaProdutos.add(prod);
-        return new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos);
+        return  ResponseEntity.ok().body(new ProdutoResponse(200, listaProdutos.size()+" Produtos encontrados", listaProdutos));
     }
 
     @ApiOperation(value = "Insere um produto")
     @RequestMapping(method =  RequestMethod.POST)
-    public ProdutoResponseDto InserirProduto(@RequestBody Produto produto) throws IOException, SQLException {
-                System.out.println("INSERE PRODUTO()");
+    public ProdutoResponseDto InserirProduto(@RequestBody Produto produto, @RequestHeader("TOKEN") String meuToken) throws IOException, SQLException {
+                System.out.println("INSERE PRODUTO()"+meuToken);
                 boolean inseriu = ProdutoDAO.inserirProduto(produto);
                 List<ProdutoDto> list = new ArrayList<>();
 

@@ -6,6 +6,7 @@ import br.com.brazukas.Models.Responses.LoginResponse;
 import br.com.brazukas.Models.Responses.LogoutResponse;
 import br.com.brazukas.controller.Dto.LoginDto;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class LoginController {
         List<Login> lista = new ArrayList<>();
 
         if(login == null){
-            return ResponseEntity.badRequest().body(new LoginResponse(403, "Usuário/senha incorretos", null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(401, "Usuário/senha incorretos ou seu usuário está inativo", null));
         }else{
 
             if(TokenController.isValid(login.get_token())){
@@ -42,7 +43,6 @@ public class LoginController {
                 login.set_token(TokenController.autenticar(login.get_id()));
                 System.out.println(login.get_token());
                 lista.add(login);
-                //return ResponseEntity.ok().body(new LoginDto("",""));
                 return ResponseEntity.ok().body(new LoginResponse(200, "Usuário autenticado", lista));
             }
         }
@@ -50,8 +50,7 @@ public class LoginController {
     @ApiOperation("Realizar logout no sistema")
     @RequestMapping(value = "/logout",method = RequestMethod.POST)
     public LogoutResponse logout(@RequestBody Login login) throws  IOException{
-        System.out.println(login);
-        System.out.println(login.get_token());
+
         if(TokenController.logout(login.get_token(), login.get_id())) {
             return new LogoutResponse(200, "Deslogado com sucesso");
         } else{

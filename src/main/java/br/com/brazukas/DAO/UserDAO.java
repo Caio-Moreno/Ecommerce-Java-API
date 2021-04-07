@@ -43,7 +43,7 @@ public class UserDAO {
 
     public  static User criarUsuarioBasico(UserCadastro userCadastro){
         User user = null;
-        String sqlInsertCliente = "insert into USUARIO(ID,NOME,EMAIL, PASSWORD, PERMISSAO) VALUES(DEFAULT, ?, ?, ?, ?);";
+        String sqlInsertCliente = "insert into USUARIO(ID,NOME,EMAIL, PASSWORD, PERMISSAO, STATUS) VALUES(DEFAULT, ?, ?, ?, ?, 'A');";
         String telefoneInsert = "insert into CLIENTE_TELEFONE(ID_CLIENTE_FK, TELEFONE) VALUES(?,?);";
         int idCliente = 0;
 

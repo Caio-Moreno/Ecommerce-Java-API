@@ -11,8 +11,7 @@ import java.sql.ResultSet;
 public class LoginDAO {
     public static Login VerificaLogin(LoginDto loginDto) {
         System.out.println(loginDto);
-        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO, TOKEN FROM USUARIO WHERE EMAIL = ? AND PASSWORD = ?";
-        //System.out.println(sql);
+        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO, TOKEN FROM USUARIO WHERE EMAIL = ? AND PASSWORD = ? AND STATUS = 'A'";
         Login login = null;
         try{
             Connection con = ConexaoDb.getConnection();

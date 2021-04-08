@@ -144,24 +144,4 @@ public class ProdutoController {
         }
 
     }
-
-    @ApiOperation(value = "Get Status Produto")
-    @RequestMapping(params = {"estado"}, method = RequestMethod.GET)
-    public ResponseEntity<?> consultas(String estado, @RequestHeader("TOKEN") String meuToken) throws IOException {
-        if (!TokenController.isValid(meuToken))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Atualiza status do produto", "/Produtos"));
-
-        ProdutoStatus prod = ProdutoDAO.consultaStatus();
-        return ResponseEntity.status(HttpStatus.OK).body(new ProdutoStatusResponse(200, "Status encontrado", prod));
-    }
-
-    @ApiOperation(value = "Get Status Produto")
-    @RequestMapping(params = {"plataforma"}, method = RequestMethod.GET)
-    public ResponseEntity<?> plataformas(String plataforma, @RequestHeader("TOKEN") String meuToken) throws IOException {
-        if (!TokenController.isValid(meuToken))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Atualiza status do produto", "/Produtos"));
-
-        ProdutoPlataforma prod = ProdutoDAO.consultaPlataforma();
-        return ResponseEntity.status(HttpStatus.OK).body(new ProdutoPlataformaResponse(200, "Status encontrado", prod));
-    }
 }

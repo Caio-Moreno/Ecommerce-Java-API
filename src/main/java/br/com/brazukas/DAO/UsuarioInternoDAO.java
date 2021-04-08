@@ -238,7 +238,7 @@ public class UsuarioInternoDAO {
     public static boolean inserirUsuarioInterno(UsuarioInterno usuarioInterno) throws IOException, SQLException {
 
         String sqlInserir = "INSERT INTO USUARIO (`ID`,`NOME`, `CPF`, `SEXO`, `DATANASCIMENTO`, `EMAIL`, `PASSWORD`, `PERMISSAO`,  `STATUS`)" +
-                " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?,  ?);";
+                " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?,  'A');";
 
         try {
             Connection con = ConexaoDb.getConnection();
@@ -252,7 +252,6 @@ public class UsuarioInternoDAO {
             ps.setString(5, usuarioInterno.get_email());
             ps.setString(6, usuarioInterno.get_password());
             ps.setString(7, usuarioInterno.get_tipoUser().getTipo());
-            ps.setString(8, usuarioInterno.get_status().getStatus());
             System.out.println(ps);
             ps.execute();
 

@@ -183,6 +183,7 @@ public class UsuarioInternoDAO {
 
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlUpdate);
+
             if(sqlUpdate.contains("PASSWORD")) {
                 ps.setString(1, userAlterar.get_nome());
                 ps.setString(2, userAlterar.get_password());

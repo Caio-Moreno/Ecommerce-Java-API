@@ -85,7 +85,9 @@ public class AdministradorController {
         if(userAlterar == null){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserAlterarResponse(503, "Erro para processar a solicitação(Valor do usuário é null)", null));
         }
-        userAlterar.set_password(convertToMd5(userAlterar.get_password()));
+        if (!(userAlterar.get_password().equals("") || userAlterar.get_password() == null)) {
+            userAlterar.set_password(convertToMd5(userAlterar.get_password()));
+        }
         boolean inseriu = UsuarioInternoDAO.atualizarUsuarioInterno(userAlterar, Id);
         List<UserAlterar> list = new ArrayList<>();
         if(inseriu){

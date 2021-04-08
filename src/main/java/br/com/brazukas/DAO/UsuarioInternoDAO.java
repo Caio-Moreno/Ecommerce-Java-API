@@ -89,7 +89,7 @@ public class UsuarioInternoDAO {
         List<UsuarioInternoDto> listaUsuariosInterno = new ArrayList<>();
 
 
-        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM USUARIO WHERE  PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA';";
+        String sqlConsulta = "SELECT ID,NOME,PERMISSAO,STATUS FROM USUARIO WHERE  PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA' ORDER BY ID ASC;";
 
         try {
 
@@ -170,17 +170,30 @@ public class UsuarioInternoDAO {
     }
 
     public static boolean atualizarUsuarioInterno(UserAlterar userAlterar, int id) throws IOException {
-        Produto prod = null;
-        String sqlUpdate = "UPDATE USUARIO SET NOME = ?,PASSWORD = ?, PERMISSAO = ?  WHERE ID = ?";
+        String sqlUpdate = "";
         boolean inseriu = true;
+
+        if (userAlterar.get_password().equals("") || userAlterar.get_password() == null) {
+            sqlUpdate = "UPDATE USUARIO SET NOME = ?, PERMISSAO = ?  WHERE ID = ?";
+        }else{
+            sqlUpdate = "UPDATE USUARIO SET NOME = ?,PASSWORD = ?, PERMISSAO = ?  WHERE ID = ?";
+        }
+
         try {
 
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlUpdate);
-            ps.setString(1, userAlterar.get_nome());
-            ps.setString(2, userAlterar.get_password());
-            ps.setString(3, userAlterar.get_tipoUser().getTipo());
-            ps.setInt(4, id);
+            if(sqlUpdate.contains("PASSWORD")) {
+                ps.setString(1, userAlterar.get_nome());
+                ps.setString(2, userAlterar.get_password());
+                ps.setString(3, userAlterar.get_tipoUser().getTipo());
+                ps.setInt(4, id);
+            }else {
+                ps.setString(1, userAlterar.get_nome());
+                ps.setString(2, userAlterar.get_tipoUser().getTipo());
+                ps.setInt(3, id);
+            }
+            System.out.println("Minha query"+ps);
             ps.execute();
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -194,7 +207,7 @@ public class UsuarioInternoDAO {
         boolean existeImagem = false;
         int i = 1;
 
-        String sqlConsulta = "SELECT NOME,PASSWORD,PERMISSAO FROM USUARIO WHERE ID = ?;";
+        String sqlConsulta = "SELECT NOME,CPF,PERMISSAO,SEXO,DATANASCIMENTO,EMAIL FROM USUARIO WHERE ID = ?;";
 
         try {
 
@@ -206,8 +219,12 @@ public class UsuarioInternoDAO {
             while (rs.next()) {
                 userAlterar = UserAlterar.builder()
                         ._nome(rs.getString("NOME"))
+                        ._cpf(rs.getString("CPF"))
                         ._tipoUser(TipoUsuarioInternoEnum.valueOf(rs.getString("PERMISSAO")))
-                        ._password(rs.getString("PASSWORD"))
+                        ._sexo(rs.getString("SEXO"))
+                        ._dataNascimento(rs.getString("DATANASCIMENTO"))
+                        ._email(rs.getString("EMAIL"))
+                        ._password("")
                         .build();
 
             }

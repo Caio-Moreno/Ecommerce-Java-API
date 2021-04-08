@@ -12,6 +12,10 @@ import lombok.*;
 @ToString
 public class UserAlterar {
     private String _nome;
+    private String _cpf;
     private TipoUsuarioInternoEnum _tipoUser;
+    private String _sexo;
+    private String _dataNascimento;
+    private String _email;
     private String _password;
 }

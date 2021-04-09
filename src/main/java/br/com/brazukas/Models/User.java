@@ -15,4 +15,5 @@ public class User {
     private String _login;
     private String _password;
     private String _permission;
+    private String _nome;
 }

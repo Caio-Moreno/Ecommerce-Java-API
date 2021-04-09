@@ -14,4 +14,5 @@ public class Login {
     private String _password;
     private String _permission;
     private String _token;
+    private String _nome;
 }

@@ -37,8 +37,6 @@ public class ProdutoDAO {
             System.out.println(ps);
             ResultSet rs = ps.executeQuery();
 
-            gravaLog("Consulta produto" + ps, "ProdutoDAO", Level.INFO);
-
             while (rs.next()) {
                 int codProduto = rs.getInt("ID");
                 String nome = rs.getString("NOME");

@@ -11,7 +11,7 @@ import java.util.List;
 public class UserDAO {
 
     public static List<User> consultaUsuarios() throws IOException {
-        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO FROM USUARIO";
+        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO, NOME FROM USUARIO";
         System.out.println(sql);
         List<User> users = new ArrayList<>();
         System.out.println(sql);
@@ -28,7 +28,8 @@ public class UserDAO {
                 String login = rs.getString("LOGIN");
                 String password = rs.getString("PASSWORD");
                 String permission = rs.getString("PERMISSAO");
-                users.add(new User(id,login,password,permission));
+                String nome = rs.getString("NOME");
+                users.add(new User(id,login,password,permission,nome));
             }
             for (User u: users) {
                 System.out.println("-----"+u);
@@ -76,7 +77,7 @@ public class UserDAO {
             user = null;
         }
 
-        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO FROM USUARIO WHERE ID = ?;";
+        String sql = "SELECT ID, EMAIL as 'LOGIN',PASSWORD, PERMISSAO,NOME FROM USUARIO WHERE ID = ?;";
         try{
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
@@ -89,7 +90,8 @@ public class UserDAO {
                 String login = rs.getString("LOGIN");
                 String password = rs.getString("PASSWORD");
                 String permission = rs.getString("PERMISSAO");
-                user = new User(id,login,password,permission);
+                String nome = rs.getString("NOME");
+                user = new User(id,login,password,permission,nome);
             }
         }catch (Exception e){
             System.out.println("erro"+e.getMessage());

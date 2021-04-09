@@ -59,5 +59,33 @@ public class LoginController {
     }
 
 
+    @ApiOperation("Verifica usuário e senha para login de cliente")
+    @RequestMapping(method = RequestMethod.POST, value = "/Cliente")
+    public ResponseEntity<?> loginCliente(@RequestBody LoginDto loginDto) throws IOException {
+
+        loginDto.set_password(convertToMd5(loginDto.get_password()));
+
+
+        Login login = LoginDAO.VerificaLoginCliente(loginDto);
+        List<Login> lista = new ArrayList<>();
+
+        if(login == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(401, "Usuário/senha incorretos ou seu usuário está inativo", null));
+        }else{
+
+            if(TokenController.isValid(login.get_token())){
+                lista.add(login);
+                return ResponseEntity.ok().body(new LoginResponse(200, "Usuário autenticado - chave já estava valida", lista));
+            }else{
+                System.out.println(login.get_token());
+                login.set_token(TokenController.autenticar(login.get_id()));
+                System.out.println(login.get_token());
+                lista.add(login);
+                return ResponseEntity.ok().body(new LoginResponse(200, "Usuário autenticado", lista));
+            }
+        }
+    }
+
+
 
 }

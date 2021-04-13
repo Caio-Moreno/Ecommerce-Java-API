@@ -2,8 +2,6 @@ package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.ProdutoDAO;
 import br.com.brazukas.Models.ProdutoAtualizar;
-import br.com.brazukas.Models.ProdutoPlataforma;
-import br.com.brazukas.Models.ProdutoStatus;
 import br.com.brazukas.Models.Responses.*;
 import br.com.brazukas.controller.Dto.ProdutoDto;
 import br.com.brazukas.Models.Produto;

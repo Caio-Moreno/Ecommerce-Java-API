@@ -1,15 +1,13 @@
 package br.com.brazukas.DAO;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import br.com.brazukas.Models.Cliente;
+import br.com.brazukas.Models.Endereco;
 import br.com.brazukas.Util.ConexaoDb;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
@@ -31,13 +29,6 @@ public class ClienteDAO {
 			ps.setString(i++, cliente.get_dataNascimento());
 			ps.setString(i++, cliente.get_telefone() );
 			ps.setString(i++, cliente.get_email());
-			ps.setString(i++, cliente.get_cep());
-			ps.setString(i++, cliente.get_endereco());
-			ps.setString(i++, cliente.get_bairro());
-			ps.setInt(i++, cliente.get_numero());
-			ps.setString(i++, cliente.get_complemento() );
-			ps.setString(i++, cliente.get_cidade());
-			ps.setString(i++, cliente.get_estado());
 			ps.setString(i++, cliente.get_cpf());
 			
 			ps.execute();
@@ -72,35 +63,63 @@ public class ClienteDAO {
 	
 	
 	public static boolean inserirCliente (Cliente cliente) throws IOException, SQLException{
-		String sqlInserir = "INSERT INTO CLIENTE (ID, NOME, CPF, SEXO, DATANASCIMENTO, TELEFONE, EMAIL, CEP, ENDERECO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE, ESTADO) VALUES"
-				+ "( DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ;";
+		int idCliente = 0;
+		String sqlInserirC = "INSERT INTO USUARIO (ID, NOME, CPF, SEXO, DATANASCIMENTO, EMAIL,PASSWORD,PERMISSAO,STATUS)\n" +
+							"VALUES ( DEFAULT, ?, ?, ?, ?, ?,  ?, 'CLIENTE','A') ;";
+		String sqlInserirE = "INSERT INTO CLIENTE_ENDERECO(ID_CLIENTE_FK, CEP, LOGRADOURO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE,ESTADO,TIPO)\n" +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String sqlInserirT = "INSERT INTO CLIENTE_TELEFONE(ID_CLIENTE_FK, TELEFONE)\n" +
+				"VALUES (?, ?);";
+
 		
 		try {
 			Connection con = ConexaoDb.getConnection();
-			PreparedStatement ps = con.prepareStatement(sqlInserir);
-			
+			PreparedStatement psC = con.prepareStatement(sqlInserirC, Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
-			
-			ps.setString(i++, cliente.get_nome());
-			ps.setString(i++, cliente.get_cpf());
-			ps.setString(i++, cliente.get_sexo() );
-			ps.setString(i++, cliente.get_dataNascimento() );
-			ps.setString(i++, cliente.get_telefone() );
-			ps.setString(i++, cliente.get_email());
-			ps.setString(i++, cliente.get_cep());
-			ps.setString(i++, cliente.get_endereco());
-			ps.setString(i++, cliente.get_bairro());
-			ps.setInt(i++, cliente.get_numero());
-			ps.setString(i++, cliente.get_complemento() );
-			ps.setString(i++, cliente.get_cidade());
-			ps.setString(i++, cliente.get_estado());
-						
-			ps.execute();
-			
+
+			psC.setString(i++, cliente.get_nome());
+			psC.setString(i++, cliente.get_cpf());
+			psC.setString(i++, cliente.get_sexo() );
+			psC.setString(i++, cliente.get_dataNascimento());
+			psC.setString(i++, cliente.get_email());
+			psC.setString(i++, cliente.get_senha());
+			System.out.println("Insert na tabela cliente -->>"+psC);
+			psC.execute();
+
+			ResultSet rs = psC.getGeneratedKeys();
+			if(rs.next()){
+				idCliente = rs.getInt(1);
+			}
+
+
+
+			PreparedStatement psE = con.prepareStatement(sqlInserirE);
+			for (Endereco end : cliente.get_endereco()) {
+				i = 1;
+				psE.setInt(i++, idCliente);
+				psE.setString(i++, end.get_cep());
+				psE.setString(i++, end.get_logradouro());
+				psE.setString(i++, end.get_bairro());
+				psE.setInt(i++, end.get_numero());
+				psE.setString(i++, end.get_complemento());
+				psE.setString(i++, end.get_cidade());
+				psE.setString(i++, end.get_estado());
+				psE.setString(i++, end.get_tipo());
+				System.out.println("Insert na tabela endereco -->>"+psE);
+				psE.execute();
+			}
+
+			PreparedStatement psT = con.prepareStatement(sqlInserirT);
+			i = 1;
+			psT.setInt(i++,idCliente);
+			psT.setString(i++,cliente.get_telefone());
+			System.out.println("Insert na tabela endereco -->>"+psE);
+			psT.execute();
+
 			return true;
 		
 		}catch (SQLException e) {
-			gravaLog(e.getMessage(), "ClienteInsertDAO", Level.SEVERE);
+			System.out.println("Erro para inserir"+e.getMessage());
 			return false;
 		}
 	}
@@ -134,7 +153,7 @@ public class ClienteDAO {
 				String cidade = rs.getString("CIDADE");
 				String estado = rs.getString("ESTADO");
 				
-				listaClientes.add(new Cliente(idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado));
+				//listaClientes.add(new Cliente(idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado));
 			           
             }
             
@@ -177,7 +196,7 @@ public class ClienteDAO {
 				String cidade = rs.getString("CIDADE");
 				String estado = rs.getString("ESTADO");
 			
-				cliente = new Cliente (idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado);
+				//cliente = new Cliente (idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado);
 		
 			}	
 
@@ -207,4 +226,47 @@ public class ClienteDAO {
 		}
 	}
 
+	public static boolean ExisteEmail(String email) {
+
+		String sqlConsulta = 	"SELECT * FROM USUARIO\n" +
+				"WHERE 1=1\n" +
+				"AND EMAIL = ?;";
+
+		try{
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+			ps.setString(1,email);
+			System.out.println("Minha consulta -->>"+ps);
+			ResultSet rs = ps.executeQuery();
+
+			return rs.next();
+
+		}catch (Exception e){
+			System.out.println("Erro"+e.getMessage());
+		}
+
+		return false;
+	}
+
+	public static boolean ExisteCpf(String cpf) {
+		String sqlConsulta = 	"SELECT * FROM USUARIO\n" +
+				"WHERE 1=1\n" +
+				"AND CPF = ?;";
+
+		try{
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+			ps.setString(1,cpf);
+			System.out.println("Minha consulta -->>"+ps);
+			ResultSet rs = ps.executeQuery();
+
+			return rs.next();
+
+		}catch (Exception e){
+			System.out.println("Erro"+e.getMessage());
+		}
+
+		return false;
+
+	}
 }

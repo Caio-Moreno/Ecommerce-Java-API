@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.Models.Endereco;
 import br.com.brazukas.Util.ConexaoDb;
+import br.com.brazukas.Util.Utils;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
@@ -164,45 +165,71 @@ public class ClienteDAO {
 		return listaClientes;
 	}
 	
-	public static Cliente getCliente(String cpf) throws IOException {
-		
-		gravaLog("Consulta cliente por cpf" + cpf, "ClienteDAO", Level.INFO);
-
+	public static Cliente getCliente(int id) throws IOException {
+		Utils.printarNaTela("Entrei");
 		Cliente cliente = null;
-		String sqlConsulta = "SELECT * FROM CLIENTE WHERE CPF = ? ; ";
-		
+		List<Endereco> listaEndereco = new ArrayList<>();
+		String sqlConsulta = "SELECT a.ID, a.NOME, a.CPF, a.SEXO, a.DATANASCIMENTO, a.EMAIL\n" +
+				",b.CEP,b.LOGRADOURO, b.BAIRRO, b.NUMERO,b.COMPLEMENTO, b.CIDADE, b.ESTADO, b.TIPO\n" +
+				", c.TELEFONE\n" +
+				"FROM USUARIO a\n" +
+				"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
+				"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+				"WHERE 1=1 \n" +
+				"AND ID = 11\n" +
+				"ORDER BY b.TIPO asc;";
+
+		int idCliente =0;
+		String nome = "";
+		String cpf = "";
+		String sexo = "";
+		String datanascimento = "";
+		String email = "";
+		String cep = "";
+		String endereco = "";
+		String bairro = "";
+		int numero = 0;
+		String complemento = "";
+		String cidade = "";
+		String estado = "";
+		String tipo = "";
+		String telefone = "";
+
+
+
+
+
 		try {
 			Connection con = ConexaoDb.getConnection();
 			PreparedStatement ps = con.prepareStatement(sqlConsulta);
 
-			ps.setString(1, cpf);
-
+			ps.setInt(1, id);
+			Utils.printarMinhaConsulta(ps);
 			ResultSet rs = ps.executeQuery();
 
-			System.out.println(ps);
-
 			while(rs.next()) {
-				int idCliente = rs.getInt("ID");
-				String nome = rs.getString("NOME");
-				String sexo = rs.getString("SEXO");
-				String dataNascimento = rs.getString("DATANASCIMENTO");
-				String telefone = rs.getString("TELEFONE");
-				String email = rs.getString("EMAIL");
-				String cep = rs.getString("CEP");
-				String endereco = rs.getString("ENDERECO");
-				String bairro = rs.getString("BAIRRO");
-				int numero = rs.getInt("NUMERO");
-				String complemento = rs.getString("COMPLEMENTO");
-				String cidade = rs.getString("CIDADE");
-				String estado = rs.getString("ESTADO");
-			
-				//cliente = new Cliente (idCliente, nome, cpf, sexo, dataNascimento, telefone, email, cep, endereco, bairro, numero, complemento, cidade, estado);
-		
-			}	
+				 idCliente = rs.getInt("ID");
+				 nome = rs.getString("NOME");
+				 cpf = rs.getString("CPF");
+				 sexo = rs.getString("SEXO");
+				 datanascimento = rs.getString("DATANASCIMENTO");
+				 email = rs.getString("EMAIL");
+				 cep = rs.getString("CEP");
+				 endereco = rs.getString("LOGRADOURO");
+				 bairro = rs.getString("BAIRRO");
+				 numero = rs.getInt("NUMERO");
+				 complemento = rs.getString("COMPLEMENTO");
+				 cidade = rs.getString("CIDADE");
+				 estado = rs.getString("ESTADO");
+				 tipo = rs.getString("TIPO");
+				 telefone = rs.getString("TELEFONE");
 
+				listaEndereco.add(new Endereco(cep,endereco,numero,complemento,bairro,cidade,estado,tipo));
+			}
+			cliente = new Cliente (idCliente,nome,email,cpf,datanascimento,"",sexo,telefone,listaEndereco);
 		
 		} catch (SQLException | IOException e) {
-			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
+			System.out.println("Erro para buscar dados do cliente");
 		}
 
 		return cliente;

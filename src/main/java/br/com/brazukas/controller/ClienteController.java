@@ -79,12 +79,16 @@ public class ClienteController {
         return listaCliente;
     }
 
+    @ApiOperation(value = "Busca um cliente")
+    @RequestMapping(params = {"id"}, method = RequestMethod.GET , value = "/BuscarCliente")
+    public ResponseEntity<?> filtraCliente(int id, @RequestHeader("TOKEN") String meuToken) throws IOException, SQLException {
 
-    @RequestMapping(params = {"cpf"}, method = RequestMethod.GET)
-    public Cliente filtraCliente(String cpf) throws IOException, SQLException {
-        Cliente lista = ClienteDAO.getCliente(cpf);
-        System.out.println(lista);
-        return lista;
+        if (!TokenController.isValid(meuToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Lista cliente por ID", "/Cliente{Id}"));
+
+        Cliente cliente = ClienteDAO.getCliente(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(cliente);
     }
 
 }

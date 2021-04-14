@@ -1,18 +1,17 @@
 package br.com.brazukas.Models;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 
-@Data
-@Getter
-@Setter
+@Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class Cliente {
+	private int _idCliente;
 	private String _nome;
 	private String _email;
 	private String _cpf;

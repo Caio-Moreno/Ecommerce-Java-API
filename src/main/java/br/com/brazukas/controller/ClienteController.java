@@ -94,4 +94,17 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(cliente);
     }
 
+    @ApiOperation(value = "Filtra cliente por email")
+    @RequestMapping(params = {"email"}, method = RequestMethod.GET , value = "/BuscarCliente")
+    public ResponseEntity<?> filtraClientePorEmail(String email) throws IOException, SQLException {
+
+        Cliente cliente = ClienteDAO.getClientePorEmail(email);
+
+        if(cliente == null){
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, "Nenhum cliente encontrado"));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(cliente);
+    }
+
 }

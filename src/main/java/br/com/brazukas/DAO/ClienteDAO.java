@@ -332,6 +332,8 @@ public class ClienteDAO {
 									",b.CEP = ?,b.LOGRADOURO = ?, b.NUMERO = ?, b.COMPLEMENTO = ?, b.BAIRRO = ?, b.ESTADO = ?, b.CIDADE= ?, b.TIPO = ?";
 						}
 					}
+				}else{
+
 				}
 			}
 
@@ -340,4 +342,83 @@ public class ClienteDAO {
 	}
 
 
+    public static Cliente getClientePorEmail(String emailCliente) {
+		Utils.printarNaTela("Entrei");
+		boolean encontrei = false;
+		Cliente cliente = null;
+		List<Endereco> listaEndereco = new ArrayList<>();
+		String sqlConsulta = "SELECT a.ID, a.NOME, a.CPF, a.SEXO, a.DATANASCIMENTO, a.EMAIL\n" +
+				",b.CEP,b.LOGRADOURO, b.BAIRRO, b.NUMERO,b.COMPLEMENTO, b.CIDADE, b.ESTADO, b.TIPO\n" +
+				", c.TELEFONE\n" +
+				"FROM USUARIO a\n" +
+				"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
+				"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+				"WHERE 1=1 \n" +
+				"AND a.EMAIL = ?\n" +
+				"ORDER BY b.TIPO asc;";
+		Utils.printarNaTela("Entrei");
+		int idCliente =0;
+		String nome = "";
+		String cpf = "";
+		String sexo = "";
+		String datanascimento = "";
+		String email = "";
+		String cep = "";
+		String endereco = "";
+		String bairro = "";
+		int numero = 0;
+		String complemento = "";
+		String cidade = "";
+		String estado = "";
+		String tipo = "";
+		String telefone = "";
+
+
+
+
+
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+
+			Utils.printarNaTela("Entrei");
+
+			ps.setString(1, emailCliente);
+			Utils.printarMinhaConsulta(ps);
+			ResultSet rs = ps.executeQuery();
+
+			while(rs.next()) {
+				encontrei = true;
+				idCliente = rs.getInt("ID");
+				nome = rs.getString("NOME");
+				cpf = rs.getString("CPF");
+				sexo = rs.getString("SEXO");
+				datanascimento = rs.getString("DATANASCIMENTO");
+				email = rs.getString("EMAIL");
+				cep = rs.getString("CEP");
+				endereco = rs.getString("LOGRADOURO");
+				bairro = rs.getString("BAIRRO");
+				numero = rs.getInt("NUMERO");
+				complemento = rs.getString("COMPLEMENTO");
+				cidade = rs.getString("CIDADE");
+				estado = rs.getString("ESTADO");
+				tipo = rs.getString("TIPO");
+				telefone = rs.getString("TELEFONE");
+
+				listaEndereco.add(new Endereco(cep,endereco,numero,complemento,bairro,cidade,estado,tipo));
+			}
+			if(encontrei) {
+				cliente = new Cliente(idCliente, nome, email, cpf, datanascimento, "", sexo, telefone, listaEndereco);
+			}else{
+				cliente = null;
+			}
+
+
+		} catch (SQLException | IOException e) {
+			cliente = null;
+			System.out.println("Erro para buscar dados do cliente");
+		}
+
+		return cliente;
+    }
 }

@@ -46,15 +46,18 @@ public class ClienteController {
         }
     }
 
+    @ApiOperation(value = "Atualiza um cliente")
+    @RequestMapping( method = RequestMethod.PUT, value = "alterar")
+    public ResponseEntity<?> Put(@RequestBody Cliente cliente, @RequestHeader("TOKEN") String meuToken) throws IOException, SQLException {
+        if (!TokenController.isValid(meuToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Lista cliente por ID", "/Cliente{Id}"));
 
-    @RequestMapping(params = {"cpf"}, method = RequestMethod.PUT)
-    public String Put(@RequestBody Cliente cliente, String cpf) throws IOException, SQLException {
         boolean alterou = ClienteDAO.alterarCliente(cliente);
 
         if (alterou) {
-            return "Cliente alterado com sucesso!";
+            return ResponseEntity.status(HttpStatus.OK).body(new ClienteResponse(200, "Cliente atualizado com sucesso!", null));
         } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao alterar as informações do cliente!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "Erro para atualizar o cliente!"));
         }
     }
 

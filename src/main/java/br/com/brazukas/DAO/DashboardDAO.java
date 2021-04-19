@@ -5,6 +5,7 @@ import br.com.brazukas.Models.ProdutoStatus;
 import br.com.brazukas.Models.UsuarioCargo;
 import br.com.brazukas.Models.UsuarioStatus;
 import br.com.brazukas.Util.ConexaoDb;
+import br.com.brazukas.Util.Utils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -81,6 +82,9 @@ public class DashboardDAO {
     }
 
     public static UsuarioStatus consultaStatusUsuario(){
+        int cont = 0;
+        int ativo = 0;
+        int inativo = 0;
         String sql = "select STATUS, count(*) as TOTAL from USUARIO\n" +
                 "                WHERE PERMISSAO = 'ADMIN' OR PERMISSAO = 'ESTOQUISTA' \n" +
                 "                GROUP by STATUS\n" +
@@ -91,11 +95,19 @@ public class DashboardDAO {
         try{
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
+            Utils.printarMinhaConsulta(ps);
             ResultSet rs = ps.executeQuery();
-                rs.next();
-                    status.set_ativo(rs.getInt("TOTAL"));
-                rs.next();
-                    status.set_inativo(rs.getInt("TOTAL"));
+                while(rs.next()){
+                    if(cont == 0) {
+                        ativo = rs.getInt("TOTAL");
+                        status.set_ativo(ativo);
+                        cont++;
+                    }else{
+                        inativo = rs.getInt("TOTAL");
+                        status.set_inativo(inativo);
+                    }
+                }
+
         }catch (Exception e ){
             status = null;
             System.out.println("Erro"+e);

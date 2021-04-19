@@ -38,6 +38,7 @@ public class DashboardController {
     @ApiOperation(value = "Get Status e Tipo Usuario")
     @RequestMapping(value = "/listaUsuario",params = "tipo", method = RequestMethod.GET)
     public ResponseEntity<?> consultaCliente(String tipo, @RequestHeader("TOKEN") String meuToken){
+        System.out.println(meuToken);
         if (!TokenController.isValid(meuToken))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Atualiza status do produto", "/Produtos"));
 

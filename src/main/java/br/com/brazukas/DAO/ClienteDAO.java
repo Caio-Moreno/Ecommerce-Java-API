@@ -16,8 +16,7 @@ import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 public class ClienteDAO {
 	
 	public static boolean alterarCliente (Cliente cliente) throws IOException, SQLException{
-		String sqlAlterar = "UPDATE CLIENTE SET NOME = ?, SEXO = ?, DATANASCIMENTO = ?, TELEFONE = ?, EMAIL = ?, CEP = ?, ENDERECO = ?, BAIRRO = ?, NUMERO = ?, COMPLEMENTO = ?, CIDADE = ?, ESTADO = ? "
-				+ "WHERE CPF = ? ;";
+		String sqlAlterar = retornaQuery(cliente);
 		
 		try {
 			Connection con = ConexaoDb.getConnection();
@@ -176,9 +175,9 @@ public class ClienteDAO {
 				"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
 				"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
 				"WHERE 1=1 \n" +
-				"AND ID = 11\n" +
+				"AND ID = ?\n" +
 				"ORDER BY b.TIPO asc;";
-
+		Utils.printarNaTela("Entrei");
 		int idCliente =0;
 		String nome = "";
 		String cpf = "";
@@ -202,6 +201,8 @@ public class ClienteDAO {
 		try {
 			Connection con = ConexaoDb.getConnection();
 			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+
+			Utils.printarNaTela("Entrei");
 
 			ps.setInt(1, id);
 			Utils.printarMinhaConsulta(ps);
@@ -294,6 +295,49 @@ public class ClienteDAO {
 		}
 
 		return false;
-
 	}
+
+	public static String retornaQuery(Cliente cliente){
+		var endereco = cliente.get_endereco();
+		String query = "";
+
+			if(cliente.get_endereco() == null) {
+				if(cliente.get_senha() == null){
+					query = "UPDATE USUARIO a\n" +
+							"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
+							"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+							"set a.NOME = ?, a.SEXO = ?, c.TELEFONE = ?";
+				}else{
+					query = "UPDATE USUARIO a\n" +
+							"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
+							"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+							"set a.NOME = ?, a.PASSWORD = ?, a.SEXO = ?, c.TELEFONE = ?";
+				}
+			}else{
+				if(endereco.size() == 2){
+					int cont = 0;
+					for (var end : endereco){
+						if(cont == 0) {
+							query += "UPDATE USUARIO a\n" +
+									"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
+									"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+									"set a.NOME = ?, a.PASSWORD = ?, a.SEXO = ?, c.TELEFONE = ?\n" +
+									",b.CEP = ?,b.LOGRADOURO = ?, b.NUMERO = ?, b.COMPLEMENTO = ?, b.BAIRRO = ?, b.ESTADO = ?, b.CIDADE= ?, b.TIPO = ?|";
+							cont++;
+						}else{
+							query += "UPDATE USUARIO a\n" +
+									"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
+									"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+									"set a.NOME = ?, a.PASSWORD = ?, a.SEXO = ?, c.TELEFONE = ?\n" +
+									",b.CEP = ?,b.LOGRADOURO = ?, b.NUMERO = ?, b.COMPLEMENTO = ?, b.BAIRRO = ?, b.ESTADO = ?, b.CIDADE= ?, b.TIPO = ?";
+						}
+					}
+				}
+			}
+
+			Utils.printarNaTela("Retorno da query"+query);
+			return query;
+	}
+
+
 }

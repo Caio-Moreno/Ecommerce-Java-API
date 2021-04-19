@@ -1,5 +1,6 @@
 package br.com.brazukas.controller;
 
+import br.com.brazukas.DAO.ClienteDAO;
 import br.com.brazukas.Models.Email;
 import br.com.brazukas.Models.Responses.ErrorResponse;
 import br.com.brazukas.Models.Responses.SuccessResponse;
@@ -25,14 +26,21 @@ public class EmailController {
     @RequestMapping(method = RequestMethod.POST, value = "Recovery")
     public ResponseEntity<?> sendMail(@RequestBody Email email) {
         try {
-            MimeMessage mail = mailSender.createMimeMessage();
+            var senha = gerarSenha();
+            boolean alterou = ClienteDAO.alterarSenha(email.get_email(), senha);
 
-            MimeMessageHelper helper = new MimeMessageHelper( mail );
-            helper.setTo(email.get_email());
-            helper.setSubject(email.get_assunto());
-            helper.setText(email.get_mensagem() + "<p>"+gerarSenha()+"</p>", true);
-            mailSender.send(mail);
-            return ResponseEntity.ok(new SuccessResponse(200, "E-mail enviado com sucesso!"));
+            if(alterou) {
+
+                MimeMessage mail = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(mail);
+                helper.setTo(email.get_email());
+                helper.setSubject(email.get_assunto());
+                helper.setText(email.get_mensagem() + "<p>" + senha + "</p>", true);
+                mailSender.send(mail);
+                return ResponseEntity.ok(new SuccessResponse(200, "E-mail enviado com sucesso!"));
+            }else{
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(500, "Erro para atualizar a senha!"));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "Erro no envio-->>"+e.getMessage()));

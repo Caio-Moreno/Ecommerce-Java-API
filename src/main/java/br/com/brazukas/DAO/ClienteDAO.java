@@ -1,6 +1,7 @@
 package br.com.brazukas.DAO;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,9 @@ import java.util.logging.Level;
 import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.Models.Endereco;
 import br.com.brazukas.Util.ConexaoDb;
+import br.com.brazukas.Util.ConverteSenhaParaMd5;
 import br.com.brazukas.Util.Utils;
+import jdk.jshell.execution.Util;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
@@ -421,4 +424,23 @@ public class ClienteDAO {
 
 		return cliente;
     }
+
+    public static boolean alterarSenha(String email, String senha) throws UnsupportedEncodingException {
+		senha = ConverteSenhaParaMd5.convertToMd5(senha);
+		String sqlUpdate = "UPDATE USUARIO \n" +
+				"SET PASSWORD = ?\n" +
+				"WHERE EMAIL = ?;";
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlUpdate);
+			ps.setString(1, senha);
+			ps.setString(2, email);
+			ps.execute();
+		}catch (Exception e){
+			Utils.printarErro(e.getMessage());
+			return  false;
+		}
+
+		return true;
+	}
 }

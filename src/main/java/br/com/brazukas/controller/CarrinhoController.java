@@ -19,12 +19,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/Carrinho")
 public class CarrinhoController {
+
     @ApiOperation(value = "Insere no carrinho porém se o produto já existe no carrinho ele só atualiza")
     @RequestMapping(method = RequestMethod.POST)
     public CarrinhoResponse enviarParaCarrinho(@RequestBody Carrinho carrinho) throws IOException {
         boolean existeCliente = ClienteDAO.clienteExite(carrinho.get_idCliente());
         boolean existeProduto = ProdutoDAO.existeProduto(carrinho.get_idProduto());
-        boolean existeProdutoNoCarrinho = CarrinhoDAO.existeProduto(carrinho.get_idProduto());
+        boolean existeProdutoNoCarrinho = CarrinhoDAO.existeProduto(carrinho);
         System.out.println("EXISTE-->"+existeProdutoNoCarrinho);
         boolean continuar = (existeCliente && existeProduto);
         if(continuar) {
@@ -56,21 +57,38 @@ public class CarrinhoController {
         return  new CarrinhoResponse(404,0,"Ainda não existe nenhum carrinho de compra vinculado ao cliente",null);
     }
 
-    @ApiOperation(value = "Atualiza um produto no carrinho")
-    @RequestMapping(method = RequestMethod.PUT)
-    public CarrinhoResponse AtualizarCarrinho(@RequestBody Carrinho carrinho) throws IOException {
-        boolean existeCliente = ClienteDAO.clienteExite(carrinho.get_idCliente());
+
+    @ApiOperation(value = "Insere no carrinho com o cliente deslogado")
+    @RequestMapping(method = RequestMethod.POST, value = "/Deslogado")
+    public CarrinhoResponse enviarParaCarrinhoClienteDeslogado(@RequestBody Carrinho carrinho) throws IOException {
+        boolean existeProdutoNoCarrinho = CarrinhoDAO.existeProduto(carrinho);
+
+        boolean inseriu = existeProdutoNoCarrinho ? CarrinhoDAO.atualizar(carrinho) : CarrinhoDAO.inserir(carrinho);
+
+        if (inseriu) {
+            return  new CarrinhoResponse(200,1,"Produto inserido ou atualizado",null);
+        }else{
+            return  new CarrinhoResponse(500,0,"Erro para inserir o produto no carrinho",null);
+        }
+    }
+
+    @ApiOperation(value = "Retorna o carrinho")
+    @RequestMapping(params = {"session"},method = RequestMethod.GET, value = "/getCart")
+    public CarrinhoResponse consultaCarrinhoDeslogado(String session) throws IOException {
+        boolean existeCliente = ClienteDAO.existeSessao(session);
+
         if(existeCliente) {
-            boolean atualizou = CarrinhoDAO.atualizar(carrinho);
-            if (atualizou) {
-                List<Carrinho> lista = CarrinhoDAO.Consultar(carrinho.get_idCliente());
-                return  new CarrinhoResponse(200,lista.size(),"Carrinho atualizado",lista);
-            }else{
-                return  new CarrinhoResponse(500,0,"Erro para inserir o produto no carrinho",null);
+            List<Carrinho> lista = CarrinhoDAO.ConsultarDeslogado(session);
+            if(lista != null){
+                return  new CarrinhoResponse(200,lista.size(),"Produtos encontrados no carrinho",lista);
+            }else {
+                return  new CarrinhoResponse(500,0,"Nenhum item no carrinho",null);
             }
         }
-        return  new CarrinhoResponse(404,0,"Produto não está mais disponivel para compra",null);
+        return  new CarrinhoResponse(404,0,"Ainda não existe nenhum carrinho de compra vinculado ao cliente",null);
     }
+
+
 
 
 

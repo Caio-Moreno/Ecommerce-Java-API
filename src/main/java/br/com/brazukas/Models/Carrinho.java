@@ -10,7 +10,8 @@ import lombok.*;
 public class Carrinho {
     private int _idCliente;
     private int _idProduto;
-    private String _nomeProduto;
+    private String _status;
     private int _quantidade;
     private double _valor;
+    private String _sessionId;
 }

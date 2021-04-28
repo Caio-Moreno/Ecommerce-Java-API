@@ -257,6 +257,22 @@ public class ClienteDAO {
 		}
 	}
 
+	public static boolean existeSessao(String sessionId) throws IOException {
+		String sqlConsulta = "SELECT * FROM CARRINHO WHERE TOKEN_SESSION = ? ; ";
+
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+			ps.setString(1, sessionId);
+			Utils.printarMinhaConsulta(ps);
+			ResultSet rs = ps.executeQuery();
+			return rs.next();
+		} catch (SQLException | IOException e) {
+			Utils.printarErro( e.getMessage());
+			return false;
+		}
+	}
+
 	public static boolean ExisteEmail(String email) {
 
 		String sqlConsulta = 	"SELECT * FROM USUARIO\n" +

@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 import br.com.brazukas.Models.Cliente;
+import br.com.brazukas.Models.ClienteAlterar;
 import br.com.brazukas.Models.Endereco;
 import br.com.brazukas.Util.ConexaoDb;
 import br.com.brazukas.Util.ConverteSenhaParaMd5;
 import br.com.brazukas.Util.Utils;
-import jdk.jshell.execution.Util;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
@@ -443,4 +443,34 @@ public class ClienteDAO {
 
 		return true;
 	}
+
+	public static boolean alterarClienteLoja(ClienteAlterar cliente, String cpf) throws IOException {
+		String sqlAlterar = "UPDATE USUARIO a" +
+				" INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK " +
+				"set a.NOME = ?, a.PASSWORD = ?, a.SEXO = ?, c.TELEFONE = ? WHERE a.CPF = ?;"
+				;
+
+
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlAlterar);
+
+
+			ps.setString(1, cliente.get_nome());
+			ps.setString(2, cliente.get_password());
+			ps.setString(3, cliente.get_sexo());
+			ps.setString(4, cliente.get_telefone());
+			ps.setString(5,cpf);
+
+			ps.execute();
+
+			return true;
+
+		}catch (SQLException | IOException e) {
+			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
+			return false;
+		}
+	}
+
+
 }

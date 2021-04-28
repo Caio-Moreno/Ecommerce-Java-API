@@ -1,9 +1,8 @@
 package br.com.brazukas.controller;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-
+import br.com.brazukas.DAO.ClienteDAO;
+import br.com.brazukas.Models.Cliente;
+import br.com.brazukas.Models.ClienteAlterar;
 import br.com.brazukas.Models.Responses.ClienteResponse;
 import br.com.brazukas.Models.Responses.ErrorResponse;
 import br.com.brazukas.Models.Responses.TokenResponse;
@@ -14,8 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.brazukas.DAO.ClienteDAO;
-import br.com.brazukas.Models.Cliente;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -105,6 +105,38 @@ public class ClienteController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(cliente);
+    }
+
+
+    @ApiOperation(value = "Atualiza um cliente")
+    @RequestMapping( params = {"cpf"},method = RequestMethod.PUT, value = "atualiza")
+    public ResponseEntity<?> atualizarCliente(@RequestBody ClienteAlterar cliente,String cpf /*,@RequestHeader("TOKEN") String meuToken*/) throws IOException, SQLException {
+//        if (!TokenController.isValid(meuToken))
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Lista cliente por ID", "/Cliente{Id}"));
+
+
+        cliente.set_password(ConverteSenhaParaMd5.convertToMd5(cliente.get_password()));
+
+        cpf = cpf.replace(".","").replace("-","");
+
+        System.out.println(cpf);
+
+        var primeiroNome = cliente.get_nome().split(" ")[0];
+        var segundoNome = cliente.get_nome().split(" ")[1];
+
+
+
+        if (primeiroNome.length() < 3 || segundoNome.length() < 3){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(400, "Nome Inválido!"));
+        }
+
+        boolean alterou = ClienteDAO.alterarClienteLoja(cliente,cpf);
+
+        if (alterou) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ClienteResponse(200, "Cliente atualizado com sucesso!", null));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "Erro para atualizar o cliente!"));
+        }
     }
 
 }

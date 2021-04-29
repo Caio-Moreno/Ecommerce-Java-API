@@ -114,6 +114,7 @@ public class ClienteController {
 //        if (!TokenController.isValid(meuToken))
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Lista cliente por ID", "/Cliente{Id}"));
 
+        cliente.set_cpf(cpf);
 
         cliente.set_password(ConverteSenhaParaMd5.convertToMd5(cliente.get_password()));
 

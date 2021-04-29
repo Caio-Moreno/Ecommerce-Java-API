@@ -39,6 +39,7 @@ public class EnderecoController {
     @RequestMapping(params = {"id"},method = RequestMethod.PUT)
     public ResponseEntity<?> alterarEndereco(@RequestBody EnderecoAlterar endereco, int id) throws IOException {
 
+        System.out.println("to aqui");
 
         boolean inseriu = EnderecoDAO.alterarEndereco(endereco,id);
 
@@ -51,10 +52,10 @@ public class EnderecoController {
 
     @ApiOperation("Remove/inativa  enderço para cliente")
     @RequestMapping(params = {"id"},method = RequestMethod.DELETE)
-    public ResponseEntity<?> inativarEndereco(int id) throws IOException {
+    public ResponseEntity<?> mudarTipoEndereco(int id, String tipoEndereco) throws IOException {
 
 
-        boolean inseriu = EnderecoDAO.inativarEndereco(id);
+        boolean inseriu = EnderecoDAO.inativarEndereco(id,tipoEndereco);
 
         if (inseriu) {
             return ResponseEntity.status(HttpStatus.OK).body(new ClienteResponse(200, "Endereço Inativado com sucesso!", null));
@@ -65,7 +66,7 @@ public class EnderecoController {
 
     @ApiOperation("Lista todos os endereços")
     @RequestMapping(params = {"id"},method = RequestMethod.GET)
-    public EnderecoResponse getUsuarios(int id) throws IOException {
+    public EnderecoResponse getEnderecos(int id) throws IOException {
         List<EnderecoAlterar> enderecos = EnderecoDAO.listarEnderecosPorId(id);
 
         return new EnderecoResponse(200, enderecos.size()+" endereços encontrados", enderecos);

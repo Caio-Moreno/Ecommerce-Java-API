@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.Models.ClienteAlterar;
 import br.com.brazukas.Models.Endereco;
+import br.com.brazukas.Models.EnderecoAlterar;
 import br.com.brazukas.Util.ConexaoDb;
 import br.com.brazukas.Util.ConverteSenhaParaMd5;
 import br.com.brazukas.Util.Utils;
@@ -69,8 +70,8 @@ public class ClienteDAO {
 		int idCliente = 0;
 		String sqlInserirC = "INSERT INTO USUARIO (ID, NOME, CPF, SEXO, DATANASCIMENTO, EMAIL,PASSWORD,PERMISSAO,STATUS)\n" +
 							"VALUES ( DEFAULT, ?, ?, ?, ?, ?,  ?, 'CLIENTE','A') ;";
-		String sqlInserirE = "INSERT INTO CLIENTE_ENDERECO(ID_CLIENTE_FK, CEP, LOGRADOURO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE,ESTADO,TIPO)\n" +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String sqlInserirE = "INSERT INTO CLIENTE_ENDERECO(ID,ID_CLIENTE_FK, CEP, LOGRADOURO, BAIRRO, NUMERO, COMPLEMENTO, CIDADE,ESTADO,TIPO)\n" +
+				"VALUES (DEFAULT,?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		String sqlInserirT = "INSERT INTO CLIENTE_TELEFONE(ID_CLIENTE_FK, TELEFONE)\n" +
 				"VALUES (?, ?);";
 
@@ -97,7 +98,7 @@ public class ClienteDAO {
 
 
 			PreparedStatement psE = con.prepareStatement(sqlInserirE);
-			for (Endereco end : cliente.get_endereco()) {
+			for (EnderecoAlterar end : cliente.get_endereco()) {
 				i = 1;
 				psE.setInt(i++, idCliente);
 				psE.setString(i++, end.get_cep());
@@ -170,16 +171,13 @@ public class ClienteDAO {
 	public static Cliente getCliente(int id) throws IOException {
 		Utils.printarNaTela("Entrei");
 		Cliente cliente = null;
-		List<Endereco> listaEndereco = new ArrayList<>();
+		List<EnderecoAlterar> listaEndereco = new ArrayList<>();
 		String sqlConsulta = "SELECT a.ID, a.NOME, a.CPF, a.SEXO, a.DATANASCIMENTO, a.EMAIL\n" +
-				",b.CEP,b.LOGRADOURO, b.BAIRRO, b.NUMERO,b.COMPLEMENTO, b.CIDADE, b.ESTADO, b.TIPO\n" +
 				", c.TELEFONE\n" +
 				"FROM USUARIO a\n" +
-				"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
 				"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
 				"WHERE 1=1 \n" +
-				"AND ID = ?\n" +
-				"ORDER BY b.TIPO asc;";
+				"AND a.ID = ?;";
 		Utils.printarNaTela("Entrei");
 		int idCliente =0;
 		String nome = "";
@@ -187,14 +185,6 @@ public class ClienteDAO {
 		String sexo = "";
 		String datanascimento = "";
 		String email = "";
-		String cep = "";
-		String endereco = "";
-		String bairro = "";
-		int numero = 0;
-		String complemento = "";
-		String cidade = "";
-		String estado = "";
-		String tipo = "";
 		String telefone = "";
 
 
@@ -218,21 +208,15 @@ public class ClienteDAO {
 				 sexo = rs.getString("SEXO");
 				 datanascimento = rs.getString("DATANASCIMENTO");
 				 email = rs.getString("EMAIL");
-				 cep = rs.getString("CEP");
-				 endereco = rs.getString("LOGRADOURO");
-				 bairro = rs.getString("BAIRRO");
-				 numero = rs.getInt("NUMERO");
-				 complemento = rs.getString("COMPLEMENTO");
-				 cidade = rs.getString("CIDADE");
-				 estado = rs.getString("ESTADO");
-				 tipo = rs.getString("TIPO");
 				 telefone = rs.getString("TELEFONE");
 
-				listaEndereco.add(new Endereco(cep,endereco,numero,complemento,bairro,cidade,estado,tipo));
+
 			}
+			listaEndereco = EnderecoDAO.listarEnderecosPorId(idCliente);
 			cliente = new Cliente (idCliente,nome,email,cpf,datanascimento,"",sexo,telefone,listaEndereco);
 		
 		} catch (SQLException | IOException e) {
+			e.printStackTrace();
 			System.out.println("Erro para buscar dados do cliente");
 		}
 
@@ -365,9 +349,9 @@ public class ClienteDAO {
 		Utils.printarNaTela("Entrei");
 		boolean encontrei = false;
 		Cliente cliente = null;
-		List<Endereco> listaEndereco = new ArrayList<>();
+		List<EnderecoAlterar> listaEndereco = new ArrayList<>();
 		String sqlConsulta = "SELECT a.ID, a.NOME, a.CPF, a.SEXO, a.DATANASCIMENTO, a.EMAIL\n" +
-				",b.CEP,b.LOGRADOURO, b.BAIRRO, b.NUMERO,b.COMPLEMENTO, b.CIDADE, b.ESTADO, b.TIPO\n" +
+				",b.CEP,b.ID,b.LOGRADOURO, b.BAIRRO, b.NUMERO,b.COMPLEMENTO, b.CIDADE, b.ESTADO, b.TIPO\n" +
 				", c.TELEFONE\n" +
 				"FROM USUARIO a\n" +
 				"INNER JOIN CLIENTE_ENDERECO b ON a.ID = b.ID_CLIENTE_FK\n" +
@@ -377,6 +361,7 @@ public class ClienteDAO {
 				"ORDER BY b.TIPO asc;";
 		Utils.printarNaTela("Entrei");
 		int idCliente =0;
+		int idEndereco =0;
 		String nome = "";
 		String cpf = "";
 		String sexo = "";
@@ -414,6 +399,7 @@ public class ClienteDAO {
 				sexo = rs.getString("SEXO");
 				datanascimento = rs.getString("DATANASCIMENTO");
 				email = rs.getString("EMAIL");
+				idEndereco = rs.getInt("ID");
 				cep = rs.getString("CEP");
 				endereco = rs.getString("LOGRADOURO");
 				bairro = rs.getString("BAIRRO");
@@ -424,7 +410,7 @@ public class ClienteDAO {
 				tipo = rs.getString("TIPO");
 				telefone = rs.getString("TELEFONE");
 
-				listaEndereco.add(new Endereco(cep,endereco,numero,complemento,bairro,cidade,estado,tipo));
+				listaEndereco.add(new EnderecoAlterar(cep,endereco,numero,complemento,bairro,cidade,estado,tipo,idEndereco));
 			}
 			if(encontrei) {
 				cliente = new Cliente(idCliente, nome, email, cpf, datanascimento, "", sexo, telefone, listaEndereco);

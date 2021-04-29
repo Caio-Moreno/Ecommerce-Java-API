@@ -181,8 +181,8 @@ public class EnderecoDAO {
         ps.executeUpdate();
     }
 
-    public static boolean inativarEndereco(int id ) throws IOException {
-        String sql = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID = ?;";
+    public static boolean inativarEndereco(int id , String tipoEndereco) throws IOException {
+        String sql = " UPDATE cliente_endereco SET TIPO = ? WHERE ID = ?;";
         String sqlBusca = "SELECT  1 as existe,TIPO FROM cliente_endereco WHERE ID =  ?;";
         int temUser = 0;
         String tipo = null;
@@ -201,7 +201,8 @@ public class EnderecoDAO {
             }
 
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
+            ps.setString(1, tipoEndereco);
+            ps.setInt(2, id);
             ps.executeUpdate();
 
             return true;

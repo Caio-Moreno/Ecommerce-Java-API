@@ -19,5 +19,5 @@ public class Cliente {
 	private String _senha;
 	private String _sexo;
 	private String _telefone;
-	private List<Endereco> _endereco;
+	private List<EnderecoAlterar> _endereco;
 }

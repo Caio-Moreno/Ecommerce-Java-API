@@ -1,8 +1,12 @@
 package br.com.brazukas.DAO;
 
+import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.Models.Endereco;
 import br.com.brazukas.Models.EnderecoAlterar;
+import br.com.brazukas.Models.Login;
 import br.com.brazukas.Util.ConexaoDb;
+import br.com.brazukas.Util.Utils;
+import br.com.brazukas.controller.Dto.LoginDto;
 import com.amazonaws.services.kms.model.NotFoundException;
 
 import java.io.IOException;
@@ -250,6 +254,38 @@ public class EnderecoDAO {
             gravaLog("Erro de SQL Exception-->"+e.getMessage(), "ClienteDAO", Level.WARNING);
         }
         return listaClientes;
+    }
+
+
+    public static EnderecoAlterar buscarEnderecosPorId(int id) {
+
+        String sql = "select * from cliente_endereco where id = ?";
+        EnderecoAlterar enderecoAlter = null;
+        try{
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next()){
+                enderecoAlter = EnderecoAlterar.builder()
+                        ._cep(rs.getString("CEP"))
+                        ._logradouro( rs.getString("LOGRADOURO"))
+                        ._bairro( rs.getString("BAIRRO"))
+                        ._numero( rs.getInt("NUMERO"))
+                        ._complemento( rs.getString("COMPLEMENTO"))
+                        ._cidade( rs.getString("CIDADE"))
+                        ._estado( rs.getString("ESTADO"))
+                        ._tipo( rs.getString("TIPO"))
+                        ._id( rs.getInt("ID"))
+                        .build();
+            }
+        }catch (Exception e){
+            System.out.println("erro"+e.getMessage());
+            enderecoAlter = null;
+        }
+        return enderecoAlter;
     }
 
 }

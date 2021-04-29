@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -65,10 +66,20 @@ public class EnderecoController {
     }
 
     @ApiOperation("Lista todos os endereços")
-    @RequestMapping(params = {"id"},method = RequestMethod.GET)
+    @RequestMapping(params = {"id"},method = RequestMethod.GET,value = "/listar")
     public ResponseEntity<?> getEnderecos(int id) throws IOException {
         List<EnderecoAlterar> enderecos = EnderecoDAO.listarEnderecosPorId(id);
 
+        return ResponseEntity.status(HttpStatus.OK).body(new EnderecoResponse(200, "Endereço atualizado com sucesso!", enderecos));
+    }
+
+
+    @ApiOperation("Lista todos os endereços")
+    @RequestMapping(params = {"id"},method = RequestMethod.GET)
+    public ResponseEntity<?> getEndereco(int id) throws IOException {
+        List<EnderecoAlterar> enderecos = new ArrayList<>();
+        var endereco = EnderecoDAO.buscarEnderecosPorId(id);
+        enderecos.add(endereco);
         return ResponseEntity.status(HttpStatus.OK).body(new EnderecoResponse(200, "Endereço atualizado com sucesso!", enderecos));
     }
 

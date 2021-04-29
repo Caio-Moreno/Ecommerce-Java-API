@@ -66,10 +66,10 @@ public class EnderecoController {
 
     @ApiOperation("Lista todos os endereços")
     @RequestMapping(params = {"id"},method = RequestMethod.GET)
-    public EnderecoResponse getEnderecos(int id) throws IOException {
+    public ResponseEntity<?> getEnderecos(int id) throws IOException {
         List<EnderecoAlterar> enderecos = EnderecoDAO.listarEnderecosPorId(id);
 
-        return new EnderecoResponse(200, enderecos.size()+" endereços encontrados", enderecos);
+        return ResponseEntity.status(HttpStatus.OK).body(new EnderecoResponse(200, "Endereço atualizado com sucesso!", enderecos));
     }
 
 }

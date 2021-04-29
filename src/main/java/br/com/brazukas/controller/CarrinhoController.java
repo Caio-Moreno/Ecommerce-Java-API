@@ -9,6 +9,7 @@ import br.com.brazukas.Models.Carrinho;
 import br.com.brazukas.Models.Responses.CarrinhoResponse;
 import br.com.brazukas.Models.Responses.VendaResponse;
 import br.com.brazukas.Models.Venda;
+import br.com.brazukas.Util.Utils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,7 +76,9 @@ public class CarrinhoController {
     @ApiOperation(value = "Retorna o carrinho")
     @RequestMapping(params = {"session"},method = RequestMethod.GET, value = "/getCart")
     public CarrinhoResponse consultaCarrinhoDeslogado(String session) throws IOException {
+        Utils.printarNaTela(session);
         boolean existeCliente = ClienteDAO.existeSessao(session);
+        Utils.printarNaTela("Passei da sessão");
 
         if(existeCliente) {
             List<Carrinho> lista = CarrinhoDAO.ConsultarDeslogado(session);

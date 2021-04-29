@@ -56,7 +56,7 @@ public class CarrinhoDAO {
                 int quantidade = rs.getInt("QUANTIDADE");
                 double valor = rs.getDouble("VALOR");
                 String sessionId = rs.getString("TOKEN_SESSION");
-                lista.add(new Carrinho(idCliente, idProduto, status, quantidade, valor, sessionId));
+                lista.add(new Carrinho(idCliente, idProduto, status, quantidade, valor, sessionId,""));
             }
         } catch (Exception e) {
             gravaLog("ERRO NA BUSCA" + e.getMessage(), "CARRINHODAO", Level.SEVERE);
@@ -67,7 +67,15 @@ public class CarrinhoDAO {
 
     public static List<Carrinho> ConsultarDeslogado(String session) throws IOException {
         List<Carrinho> lista = new ArrayList<>();
-        String sql = "SELECT ID_CLIENTE,ID_PRODUTO, STATUS, SUM(QUANTIDADE) as QUANTIDADE, SUM(VALOR *QUANTIDADE) AS VALOR, TOKEN_SESSION FROM CARRINHO WHERE TOKEN_SESSION = ? GROUP BY ID_CLIENTE,ID_PRODUTO,STATUS, QUANTIDADE;";
+        String sql = "select car.ID_CLIENTE, caminho_max.ID_PRODUTO, car.STATUS, car.QUANTIDADE,SUM(car.VALOR *car.QUANTIDADE) AS VALOR, car.TOKEN_SESSION, caminho_max.CAMINHO  from (\n" +
+                "SELECT ID_PRODUTO, min(b.CAMINHO) as CAMINHO\n" +
+                "FROM CARRINHO a\n" +
+                "INNER JOIN IMAGENS b ON a.ID_PRODUTO = b.ID_PRODUTO_FK\n" +
+                "WHERE TOKEN_SESSION = ? \n" +
+                "group by ID_PRODUTO\n" +
+                ") as caminho_max\n" +
+                "inner join CARRINHO car ON caminho_max.ID_PRODUTO = car.ID_PRODUTO\n" +
+                "group by car.ID_CLIENTE, caminho_max.ID_PRODUTO, car.STATUS, car.QUANTIDADE,car.TOKEN_SESSION ,caminho_max.CAMINHO";
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
@@ -82,7 +90,8 @@ public class CarrinhoDAO {
                 int quantidade = rs.getInt("QUANTIDADE");
                 double valor = rs.getDouble("VALOR");
                 String sessionId = rs.getString("TOKEN_SESSION");
-                lista.add(new Carrinho(idCliente, idProduto, status, quantidade, valor, sessionId));
+                String caminho = rs.getString("CAMINHO");
+                lista.add(new Carrinho(idCliente, idProduto, status, quantidade, valor, sessionId,caminho));
             }
         } catch (Exception e) {
             Utils.printarErro("ERRO NA BUSCA" + e.getMessage());

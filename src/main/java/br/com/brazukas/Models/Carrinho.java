@@ -14,4 +14,5 @@ public class Carrinho {
     private int _quantidade;
     private double _valor;
     private String _sessionId;
+    private String _imageProduto;
 }

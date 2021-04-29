@@ -49,25 +49,25 @@ public class ProdutoDAO {
                 String plataforma = rs.getString("PLATAFORMA");
                 int qtdEstoque = rs.getInt("QUANTIDADE");
 
-                System.out.println("CODIGO RETORNADO DA PASSAGEM --->"+i+"----"+codProduto);
+
 
 
                 if(i == 1) {
-                    System.out.println("PASSEI PRIMEIRA VEZ"+codProduto);
+
                     listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
                 }else {
                     for (ProdutoDto prod : listaProdutos) {
                         if ((prod.get_idProduto() == codProduto)) {
-                            System.out.println("Produto já existe"+prod.get_idProduto());
+
                             jaExiste = true;
                             break;
                         }else{
                             jaExiste = false;
                         }
                     }
-                    System.out.println("Valor do jaExiste"+jaExiste);
+
                     if(!jaExiste){
-                        System.out.println("Vou adicionar pois o valor do ja existe"+jaExiste);
+
                         listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
                     }
                 }

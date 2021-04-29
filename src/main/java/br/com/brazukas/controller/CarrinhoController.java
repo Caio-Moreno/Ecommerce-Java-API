@@ -63,6 +63,7 @@ public class CarrinhoController {
     @RequestMapping(method = RequestMethod.POST, value = "/Deslogado")
     public CarrinhoResponse enviarParaCarrinhoClienteDeslogado(@RequestBody Carrinho carrinho) throws IOException {
         boolean existeProdutoNoCarrinho = CarrinhoDAO.existeProduto(carrinho);
+        Utils.printarNaTela("aqui"+existeProdutoNoCarrinho);
 
         boolean inseriu = existeProdutoNoCarrinho ? CarrinhoDAO.atualizar(carrinho) : CarrinhoDAO.inserir(carrinho);
 

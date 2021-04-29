@@ -15,4 +15,5 @@ public class Carrinho {
     private double _valor;
     private String _sessionId;
     private String _imageProduto;
+    private String _nomeProduto;
 }

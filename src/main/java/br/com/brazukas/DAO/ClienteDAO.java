@@ -242,14 +242,13 @@ public class ClienteDAO {
 	}
 
 	public static boolean existeSessao(String sessionId) throws IOException {
-		Utils.printarNaTela(sessionId);
+		Utils.printarNaTela("EXISTE SESSAO"+sessionId);
 		String sqlConsulta = "SELECT * FROM CARRINHO WHERE TOKEN_SESSION = ? ; ";
 		Utils.printarNaTela(sqlConsulta);
 
 		try {
 			Connection con = ConexaoDb.getConnection();
 			PreparedStatement ps = con.prepareStatement(sqlConsulta);
-			Utils.printarMinhaConsulta(ps);
 			ps.setString(1, sessionId);
 			Utils.printarMinhaConsulta(ps);
 			ResultSet rs = ps.executeQuery();

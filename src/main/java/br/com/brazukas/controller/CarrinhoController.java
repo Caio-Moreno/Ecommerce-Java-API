@@ -62,6 +62,7 @@ public class CarrinhoController {
     @ApiOperation(value = "Insere no carrinho com o cliente deslogado")
     @RequestMapping(method = RequestMethod.POST, value = "/Deslogado")
     public CarrinhoResponse enviarParaCarrinhoClienteDeslogado(@RequestBody Carrinho carrinho) throws IOException {
+        Utils.printarNaTela("Sessao"+carrinho.get_sessionId());
         boolean existeProdutoNoCarrinho = CarrinhoDAO.existeProduto(carrinho);
         Utils.printarNaTela("aqui"+existeProdutoNoCarrinho);
 
@@ -77,12 +78,17 @@ public class CarrinhoController {
     @ApiOperation(value = "Retorna o carrinho")
     @RequestMapping(params = {"session"},method = RequestMethod.GET, value = "/getCart")
     public CarrinhoResponse consultaCarrinhoDeslogado(String session) throws IOException {
-        Utils.printarNaTela(session);
+        Utils.printarNaTela("RETORNA CARRINHO");
         boolean existeCliente = ClienteDAO.existeSessao(session);
         Utils.printarNaTela("Passei da sessão");
 
+
+
         if(existeCliente) {
             List<Carrinho> lista = CarrinhoDAO.ConsultarDeslogado(session);
+
+            CarrinhoDAO.deletaProdutoZerado(lista, session);
+
             if(lista != null){
                 return  new CarrinhoResponse(200,lista.size(),"Produtos encontrados no carrinho",lista);
             }else {
@@ -91,6 +97,48 @@ public class CarrinhoController {
         }
         return  new CarrinhoResponse(404,0,"Ainda não existe nenhum carrinho de compra vinculado ao cliente",null);
     }
+
+    @ApiOperation(value = "Deleta produto do carrinho")
+    @RequestMapping(params = {"id", "session"}, method = RequestMethod.DELETE, value="/deleteCart")
+    public CarrinhoResponse deletaDoCarrinho(int id, String session) throws IOException {
+        Utils.printarNaTela("Meu id-->>"+id+" minha sessao-->>"+session);
+        boolean deletou = CarrinhoDAO.deletaProduto(id,session);
+
+        if(deletou){
+            return  new CarrinhoResponse(200, 0,"Produto deletado com sucesso", null);
+        }else{
+            return  new CarrinhoResponse(404, 0,"Erro para deletar o produto", null);
+        }
+    }
+
+
+    @ApiOperation(value = "Decrementa quantidade")
+    @RequestMapping(params = {"id", "session"}, method = RequestMethod.POST, value="/decrement")
+    public CarrinhoResponse decrementaCarrinho(int id, String session) throws IOException {
+        Utils.printarNaTela("Meu id-->>"+id+" minha sessao-->>"+session);
+        boolean deletou = CarrinhoDAO.decrementaProduto(id,session);
+
+        if(deletou){
+            return  new CarrinhoResponse(200, 0,"Ok", null);
+        }else{
+            return  new CarrinhoResponse(404, 0,"Erro para decrementar", null);
+        }
+    }
+
+    @ApiOperation(value = "incrementa quantidade")
+    @RequestMapping(params = {"id", "session"}, method = RequestMethod.POST, value="/increment")
+    public CarrinhoResponse incrementaCarrinho(int id, String session) throws IOException {
+        Utils.printarNaTela("Meu id-->>"+id+" minha sessao-->>"+session);
+        boolean deletou = CarrinhoDAO.incrementaProduto(id,session);
+
+        if(deletou){
+            return  new CarrinhoResponse(200, 0,"Ok", null);
+        }else{
+            return  new CarrinhoResponse(404, 0,"Erro para decrementar", null);
+        }
+    }
+
+
 
 
 

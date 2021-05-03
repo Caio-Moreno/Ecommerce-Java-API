@@ -141,6 +141,7 @@ public class CarrinhoDAO {
     }
 
     public static boolean existeProduto(Carrinho carrinho) {
+        Utils.printarNaTela("AAAAAAAAAAAAA"+carrinho.get_sessionId());
         String sql = gerarQueryConsulta(carrinho);
         try {
             Connection con = ConexaoDb.getConnection();
@@ -149,7 +150,9 @@ public class CarrinhoDAO {
             if(sql.contains(("ID_CLIENTE"))){
                 ps.setInt(2,carrinho.get_idCliente());
             }else{
+                Utils.printarNaTela("BBBBBBBBBBBBBBBBB"+carrinho.get_sessionId());
                 ps.setString(2, carrinho.get_sessionId());
+
             }
             Utils.printarMinhaConsulta(ps);
             ResultSet rs = ps.executeQuery();
@@ -159,5 +162,65 @@ public class CarrinhoDAO {
             Utils.printarErro(e.getMessage());
         }
         return false;
+    }
+
+    public static boolean deletaProduto(int id, String session) {
+        Utils.printarNaTela("Delatar produto");
+        String sql = "DELETE FROM BRAZUKAS.CARRINHO\n" +
+                "WHERE ID_PRODUTO = ? AND TOKEN_SESSION = ? ";
+
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.setString(2,session);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean decrementaProduto(int id, String session) {
+        String sql ="UPDATE CARRINHO SET QUANTIDADE = QUANTIDADE - 1 WHERE ID_PRODUTO = ? AND TOKEN_SESSION = ?";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.setString(2,session);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+
+    }
+
+    public static boolean incrementaProduto(int id, String session) {
+        String sql ="UPDATE CARRINHO SET QUANTIDADE = QUANTIDADE + 1 WHERE ID_PRODUTO = ? AND TOKEN_SESSION = ?";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.setString(2,session);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static void deletaProdutoZerado(List<Carrinho> lista, String session) {
+        for (Carrinho c: lista) {
+            if(c.get_quantidade() <= 0){
+                deletaProduto(c.get_idProduto(), session);
+            }
+        }
     }
 }

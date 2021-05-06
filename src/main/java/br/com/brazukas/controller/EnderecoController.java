@@ -42,6 +42,18 @@ public class EnderecoController {
 
         System.out.println("to aqui");
 
+        if (
+                endereco.get_bairro() == null || endereco.get_bairro().isEmpty() ||
+                endereco.get_cep() == null    || endereco.get_cep().isEmpty()    ||
+                endereco.get_cidade() == null || endereco.get_cidade().isEmpty() ||
+                endereco.get_estado() == null || endereco.get_estado().isEmpty() ||
+                endereco.get_logradouro() == null || endereco.get_logradouro().isEmpty() ||
+                endereco.get_tipo() == null || endereco.get_tipo().isEmpty() ||
+                endereco.get_numero() == 0
+        ){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(400, "Erro para atualizar o Endereço!"));
+        }
+
         boolean inseriu = EnderecoDAO.alterarEndereco(endereco,id);
 
         if (inseriu) {

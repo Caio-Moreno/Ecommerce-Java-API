@@ -59,6 +59,33 @@ public class CarrinhoController {
     }
 
 
+    @ApiOperation(value = "Decrementa quantidade")
+    @RequestMapping(params = {"id", "idCliente"}, method = RequestMethod.POST, value="/decrement/logged")
+    public CarrinhoResponse decrementaCarrinhoLogado(int id, int idCliente) throws IOException {
+        Utils.printarNaTela("Meu id-->>"+id+" minha sessao-->>"+idCliente);
+        boolean deletou = CarrinhoDAO.decrementaProdutoLogado(id,idCliente);
+
+        if(deletou){
+            return  new CarrinhoResponse(200, 0,"Ok", null);
+        }else{
+            return  new CarrinhoResponse(404, 0,"Erro para decrementar", null);
+        }
+    }
+
+    @ApiOperation(value = "incrementa quantidade logado")
+    @RequestMapping(params = {"id", "idCliente"}, method = RequestMethod.POST, value="/increment/logged")
+    public CarrinhoResponse incrementaCarrinhoLogado(int id, int idCliente) throws IOException {
+        Utils.printarNaTela("Meu id-->>"+id+" minha sessao-->>"+idCliente);
+        boolean deletou = CarrinhoDAO.incrementaProdutoLogado(id,idCliente);
+
+        if(deletou){
+            return  new CarrinhoResponse(200, 0,"Ok", null);
+        }else{
+            return  new CarrinhoResponse(404, 0,"Erro para decrementar", null);
+        }
+    }
+
+
     @ApiOperation(value = "Insere no carrinho com o cliente deslogado")
     @RequestMapping(method = RequestMethod.POST, value = "/Deslogado")
     public CarrinhoResponse enviarParaCarrinhoClienteDeslogado(@RequestBody Carrinho carrinho) throws IOException {
@@ -138,10 +165,16 @@ public class CarrinhoController {
         }
     }
 
+    @ApiOperation(value = "Atualiza Carrinho vinculando ele ao cliente")
+    @RequestMapping(params = {"session", "idCliente"}, method = RequestMethod.PUT, value="/updateCart")
+    public CarrinhoResponse vinculaCarrinho(String session, int idCliente) throws IOException {
+        Utils.printarNaTela("Meu id-->>"+idCliente+ "sessao -->>"+session);
+        boolean deletou = CarrinhoDAO.vinculaCarrinho(session, idCliente);
 
-
-
-
-
-
+        if(deletou){
+            return  new CarrinhoResponse(200, 0,"Ok", null);
+        }else{
+            return  new CarrinhoResponse(404, 0,"Erro para decrementar", null);
+        }
+    }
 }

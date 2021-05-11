@@ -42,7 +42,16 @@ public class CarrinhoDAO {
 
     public static List<Carrinho> Consultar(int id) throws IOException {
         List<Carrinho> lista = new ArrayList<>();
-        String sql = "SELECT ID_CLIENTE,ID_PRODUTO, STATUS, SUM(QUANTIDADE) as QUANTIDADE, SUM(VALOR *QUANTIDADE) AS VALOR FROM CARRINHO WHERE ID_CLIENTE = ? GROUP BY ID_CLIENTE,ID_PRODUTO,STATUS, QUANTIDADE;";
+        String sql = "select car.ID_CLIENTE, caminho_max.ID_PRODUTO,prod.NOME, car.STATUS, car.QUANTIDADE,ROUND(SUM(car.VALOR *car.QUANTIDADE),2) AS VALOR, car.TOKEN_SESSION, caminho_max.CAMINHO  from (\n" +
+                "SELECT ID_PRODUTO, min(b.CAMINHO) as CAMINHO\n" +
+                "FROM CARRINHO a\n" +
+                "INNER JOIN IMAGENS b ON a.ID_PRODUTO = b.ID_PRODUTO_FK\n" +
+                "WHERE ID_CLIENTE = ?\n" +
+                "group by ID_PRODUTO\n" +
+                ") as caminho_max\n" +
+                "inner join CARRINHO car ON caminho_max.ID_PRODUTO = car.ID_PRODUTO\n" +
+                "inner join PRODUTO prod on caminho_max.ID_PRODUTO = prod.ID\n" +
+                "group by car.ID_CLIENTE, caminho_max.ID_PRODUTO, car.STATUS, car.QUANTIDADE,car.TOKEN_SESSION ,caminho_max.CAMINHO";
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
@@ -56,10 +65,12 @@ public class CarrinhoDAO {
                 int quantidade = rs.getInt("QUANTIDADE");
                 double valor = rs.getDouble("VALOR");
                 String sessionId = rs.getString("TOKEN_SESSION");
-                lista.add(new Carrinho(idCliente, idProduto, status, quantidade, valor, sessionId,"", ""));
+                String caminho = rs.getString("CAMINHO");
+                String nomeProd = rs.getString("NOME");
+                lista.add(new Carrinho(idCliente, idProduto, status, quantidade, valor, sessionId,caminho, nomeProd));
             }
         } catch (Exception e) {
-            gravaLog("ERRO NA BUSCA" + e.getMessage(), "CARRINHODAO", Level.SEVERE);
+            Utils.printarErro("ERRO NA BUSCA" + e.getMessage());
             lista = null;
         }
         return lista;
@@ -67,7 +78,7 @@ public class CarrinhoDAO {
 
     public static List<Carrinho> ConsultarDeslogado(String session) throws IOException {
         List<Carrinho> lista = new ArrayList<>();
-        String sql = "select car.ID_CLIENTE, caminho_max.ID_PRODUTO,prod.NOME, car.STATUS, car.QUANTIDADE,SUM(car.VALOR *car.QUANTIDADE) AS VALOR, car.TOKEN_SESSION, caminho_max.CAMINHO  from (\n" +
+        String sql = "select car.ID_CLIENTE, caminho_max.ID_PRODUTO,prod.NOME, car.STATUS, car.QUANTIDADE,ROUND(SUM(car.VALOR *car.QUANTIDADE),2) AS VALOR, car.TOKEN_SESSION, caminho_max.CAMINHO  from (\n" +
                 "SELECT ID_PRODUTO, min(b.CAMINHO) as CAMINHO\n" +
                 "FROM CARRINHO a\n" +
                 "INNER JOIN IMAGENS b ON a.ID_PRODUTO = b.ID_PRODUTO_FK\n" +
@@ -222,5 +233,80 @@ public class CarrinhoDAO {
                 deletaProduto(c.get_idProduto(), session);
             }
         }
+    }
+
+    public static boolean vinculaCarrinho(String session, int idCliente) {
+        String sql = "UPDATE CARRINHO SET ID_CLIENTE = ? WHERE TOKEN_SESSION = ?";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,idCliente);
+            ps.setString(2,session);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean decrementaProdutoLogado(int id, int idCliente) {
+        String sql ="UPDATE CARRINHO SET QUANTIDADE = QUANTIDADE - 1 WHERE ID_PRODUTO = ? AND ID_CLIENTE = ?";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.setInt(2,idCliente);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean incrementaProdutoLogado(int id, int idCliente) {
+        String sql ="UPDATE CARRINHO SET QUANTIDADE = QUANTIDADE + 1 WHERE ID_PRODUTO = ? AND ID_CLIENTE = ?";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.setInt(2,idCliente);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static void deletaProdutoZeradoLogado(List<Carrinho> lista, int idCliente) {
+        for (Carrinho c: lista) {
+            if(c.get_quantidade() <= 0){
+                deletaProdutoLogado(c.get_idCliente(), idCliente);
+            }
+        }
+    }
+
+    public static boolean deletaProdutoLogado(int id, int idCliente) {
+        Utils.printarNaTela("Delatar produto");
+        String sql = "DELETE FROM BRAZUKAS.CARRINHO\n" +
+                "WHERE ID_PRODUTO = ? AND ID_CLIENTE = ? ";
+
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.setInt(2,idCliente);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
     }
 }

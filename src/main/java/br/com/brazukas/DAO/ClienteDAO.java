@@ -225,8 +225,8 @@ public class ClienteDAO {
 
 	public static boolean clienteExite(int id) throws IOException {
 
-		gravaLog("Consulta cliente por cpf" + id, "ClienteDAO", Level.INFO);
-		String sqlConsulta = "SELECT * FROM CLIENTE WHERE ID = ? ; ";
+		Utils.printarNaTela("Consulta cliente por id" + id);
+		String sqlConsulta = "SELECT * FROM USUARIO WHERE ID = ? ; ";
 
 		try {
 			Connection con = ConexaoDb.getConnection();
@@ -236,7 +236,7 @@ public class ClienteDAO {
 			System.out.println(ps);
 			return rs.next();
 		} catch (SQLException | IOException e) {
-			gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ClienteDAO", Level.WARNING);
+			Utils.printarErro("Erro de SQL Exception-->" + e.getMessage());
 			return false;
 		}
 	}

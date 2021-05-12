@@ -309,4 +309,22 @@ public class CarrinhoDAO {
         }
         return true;
     }
+
+    public static boolean deletaCarrinho(int id) {
+        Utils.printarNaTela("Delatar produto");
+        String sql = "DELETE FROM BRAZUKAS.CARRINHO\n" +
+                "WHERE ID_CLIENTE = ? ";
+
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,id);
+            Utils.printarMinhaConsulta(ps);
+            ps.execute();
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

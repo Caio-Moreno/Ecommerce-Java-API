@@ -12,13 +12,12 @@ public class Venda {
     private String _dataVenda;
     private int _idCliente;
     private int _quantidade;
-    private double _desconto;
     private double _valorTotal;
-    private String _nome;
+    private String _status;
 
     public Venda(int _idVenda, String _nome,int _quantidade, double _valorTotal, String _dataVenda){
         this._idVenda = _idVenda;
-        this._nome = _nome;
+        this._status = _nome;
         this._quantidade = _quantidade;
         this._valorTotal = _valorTotal;
         this._dataVenda = _dataVenda;

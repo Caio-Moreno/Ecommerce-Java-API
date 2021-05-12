@@ -12,7 +12,6 @@ import java.util.List;
 @ToString
 public class VendaResponse {
     private int _response;
-    private int _quantidade;
     private String _message;
-    private List<Venda> _vendas;
+    private int _idVenda;
 }

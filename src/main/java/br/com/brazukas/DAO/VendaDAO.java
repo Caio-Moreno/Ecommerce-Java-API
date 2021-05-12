@@ -1,9 +1,11 @@
 package br.com.brazukas.DAO;
 
+import br.com.brazukas.Models.Payment;
 import br.com.brazukas.Models.Produto;
 import br.com.brazukas.Models.Venda;
 import br.com.brazukas.Models.VendaHasProduto;
 import br.com.brazukas.Util.ConexaoDb;
+import br.com.brazukas.Util.Utils;
 
 import java.io.IOException;
 import java.sql.*;
@@ -78,37 +80,64 @@ public class VendaDAO {
         return venda;
     }
 
-    public static boolean inserirVenda(VendaHasProduto venda) {
-        boolean inseriu = true;
-        String sqlInsert = "INSERT INTO(ID, DATA_VENDA, COD_CLIENTE, QUANTIDADE, DESCONTO,VALOR_TOTAL) VALUES(DEFAULT, ?,?,?,?,?);";
+    public static int inserirVenda(VendaHasProduto venda) {
+        String sqlInsert = "INSERT INTO VENDA(ID, DATA_VENDA, COD_CLIENTE, QUANTIDADE,VALOR_TOTAL, STATUS) VALUES(DEFAULT, curdate(),?,?,?,?);";
+        int id = 0;
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1,venda.getVenda().get_dataVenda());
-            ps.setInt(2,venda.getVenda().get_idCliente());
-            ps.setInt(3,venda.getVenda().get_quantidade());
-            ps.setDouble(4,venda.getVenda().get_desconto());
-            ps.setDouble(5,venda.getVenda().get_valorTotal());
-            int id = 0;
+            ps.setInt(1,venda.getVenda().get_idCliente());
+            ps.setInt(2,venda.getVenda().get_quantidade());
+            ps.setDouble(3,venda.getVenda().get_valorTotal());
+            ps.setString(4,"PENDING PAYMENT");
+
+
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if(rs.next()){
                 id = rs.getInt(1);
             }
             /*INSERI NA TABELA VENDA AGORA VOU INSERIR NA TABELA VENDA_HAS_PRODUTO*/
-            String insertVendaHasProduto = "INSERT INTO VENDA_HAS_PRODUTO(ID_VENDA, ID_PRODUTO_FK, VALOR, QUANTIDADE) VALUES(?,?,?,?);";
+            String insertVendaHasProduto = "INSERT INTO VENDA_HAS_PRODUTO(ID_VENDA_FK, ID_PRODUTO_FK, VALOR, QUANTIDADE) VALUES(?,?,?,?);";
             PreparedStatement ps2 = con.prepareStatement(insertVendaHasProduto);
             for(Produto prod : venda.getProdutos()) {
-                ps.setInt(1,id);
-                ps.setInt(2,prod.get_idProduto());
-                ps.setDouble(3,prod.get_preco());
-                ps.setInt(4,prod.get_qtdEstoque());
-                ps.executeUpdate();
+                ps2.setInt(1,id);
+                ps2.setInt(2,prod.get_idProduto());
+                ps2.setDouble(3,prod.get_preco());
+                ps2.setInt(4,prod.get_qtdEstoque());
+                ps2.executeUpdate();
             }
 
-        } catch (SQLException | IOException throwables) {
-            inseriu = false;
+            CarrinhoDAO.deletaCarrinho(venda.getVenda().get_idCliente());
+
+        } catch (Exception e) {
+            Utils.printarErro("erro"+e.getMessage());
+            id = 0;
         }
-        return inseriu;
+        return id;
+    }
+
+    public static boolean insertPayment(Payment payment) {
+        String query ="INSERT INTO CLIENTE_PAGAMENTO(ID,NAME_CART,NUMBER_CART,ID_VENDA_FK,VALOR,QTD_PARCELAS,PAYPAL_EMAIL,PAYPAL_CPF,NUM_BOLETO,MP_EMAIL,MP_CPF) VALUES (DEFAULT, ?,?, ?,?, ?,?, ?,?, ?,?)";
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+            int i = 1;
+            ps.setString(i++,payment.get_nameCart());
+            ps.setString(i++,payment.get_numberCart());
+            ps.setInt(i++,payment.get_idVendaFk());
+            ps.setDouble(i++,payment.get_valor());
+            ps.setInt(i++,payment.get_qtdParcelas());
+            ps.setString(i++,payment.get_paypalEmail());
+            ps.setString(i++,payment.get_paypalCpf());
+            ps.setString(i++,payment.get_numBoleto());
+            ps.setString(i++,payment.get_mpEmail());
+            ps.setString(i++,payment.get_mpCpf());
+            ps.executeUpdate();
+            return true;
+        }catch (Exception e){
+            Utils.printarErro("Erro"+e.getMessage());
+        }
+        return false;
     }
 }

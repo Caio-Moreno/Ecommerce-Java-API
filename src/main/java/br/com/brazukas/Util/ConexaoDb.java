@@ -19,9 +19,9 @@ public class ConexaoDb {
     private static final Logger meuLog = Logger.getLogger( ConexaoDb.class.getName() );
 
     private static Connection connection = null;
-    private static String _connectionString = "jdbc:mysql://127.0.0.1:3306/BRAZUKAS?useTimezone=true&serverTimezone=UTC&useSSL=false";
+    private static String _connectionString = "jdbc:mysql://10.211.55.16:3306/BRAZUKAS?useTimezone=true&serverTimezone=UTC&useSSL=false";
     private static String _username ="root";
-    private static String _password = "root";
+    private static String _password = "Theblunt15.02";
 
     public ConexaoDb() throws IOException {
         gravaLog("Conexão -->" + _connectionString, "ConexaoDb", Level.INFO);
@@ -39,12 +39,12 @@ public class ConexaoDb {
 
             }
         	catch (SQLException e) {
-                gravaLog("Erro na SQLException->"+ e.getMessage() + "SQL STATE -->"+e.getSQLState()+ "CAUSA"+e.getCause(), "ConexaoDb", Level.SEVERE);
+                System.out.println("Erro na conexao -->>>>>>>>>>>>"+e.getMessage());
             } catch (IOException e) {
-                gravaLog("Erro na IOException"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
+                System.out.println("Erro na conexao -->>>>>>>>>>>>"+e.getMessage());
             }
             catch (Exception e){
-                gravaLog("Erro na Exception"+ e.getMessage(), "ConexaoDb", Level.SEVERE);
+                System.out.println("Erro na conexao -->>>>>>>>>>>>"+e.getMessage());
             }
             return connection;
         }

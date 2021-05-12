@@ -3,6 +3,7 @@ package br.com.brazukas.controller;
 import br.com.brazukas.DAO.ClienteDAO;
 import br.com.brazukas.Models.Cliente;
 import br.com.brazukas.Models.ClienteAlterar;
+import br.com.brazukas.Models.Frete;
 import br.com.brazukas.Models.Responses.ClienteResponse;
 import br.com.brazukas.Models.Responses.ErrorResponse;
 import br.com.brazukas.Models.Responses.TokenResponse;
@@ -138,6 +139,19 @@ public class ClienteController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "Erro para atualizar o cliente!"));
         }
+    }
+
+    @ApiOperation(value = "Buscar frete do cliente")
+    @RequestMapping(params = {"uf"}, method = RequestMethod.GET , value = "/valorFrete")
+    public ResponseEntity<?> filtrarFrete(String uf) throws IOException, SQLException {
+
+        Frete frete = ClienteDAO.frete(uf);
+
+        if(frete == null){
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, "Erro na busca do frete, o estado não foi encontrado na base"));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(frete);
     }
 
 }

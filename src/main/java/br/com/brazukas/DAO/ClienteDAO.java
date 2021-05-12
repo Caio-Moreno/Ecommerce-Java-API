@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import br.com.brazukas.Models.Cliente;
-import br.com.brazukas.Models.ClienteAlterar;
-import br.com.brazukas.Models.Endereco;
-import br.com.brazukas.Models.EnderecoAlterar;
+import br.com.brazukas.Models.*;
 import br.com.brazukas.Util.ConexaoDb;
 import br.com.brazukas.Util.ConverteSenhaParaMd5;
 import br.com.brazukas.Util.Utils;
@@ -477,4 +474,29 @@ public class ClienteDAO {
 	}
 
 
+	public static Frete frete(String uf) {
+
+		String sql = "SELECT * FROM BRAZUKAS.FRETES WHERE UF = ?";
+
+		try{
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1,uf);
+			Utils.printarMinhaConsulta(ps);
+			ResultSet rs = ps.executeQuery();
+
+			rs.next();
+
+			int id = rs.getInt("ID");
+			String UF = rs.getString("UF");
+			double valorFast = rs.getDouble("VALOR_FAST");
+			double valorNormal = rs.getDouble("VALOR_NORMAL");
+
+			return  new Frete(id,UF,valorFast,valorNormal);
+
+		}catch (Exception e){
+			Utils.printarErro("Erro para buscar frete"+e.getMessage());
+		}
+		return null;
+	}
 }

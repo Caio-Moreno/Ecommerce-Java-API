@@ -95,6 +95,18 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(cliente);
     }
 
+    @ApiOperation(value = "Busca um cliente com endereco ativo")
+    @RequestMapping(params = {"id"}, method = RequestMethod.GET , value = "/BuscarCliente/Ativos")
+    public ResponseEntity<?> filtraClienteEnderecoAtivo(int id, @RequestHeader("TOKEN") String meuToken) throws IOException, SQLException {
+
+        if (!TokenController.isValid(meuToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Lista cliente por ID", "/Cliente{Id}"));
+
+        Cliente cliente = ClienteDAO.getClienteAtivo(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(cliente);
+    }
+
     @ApiOperation(value = "Filtra cliente por email")
     @RequestMapping(params = {"email"}, method = RequestMethod.GET , value = "/BuscarCliente")
     public ResponseEntity<?> filtraClientePorEmail(String email) throws IOException, SQLException {

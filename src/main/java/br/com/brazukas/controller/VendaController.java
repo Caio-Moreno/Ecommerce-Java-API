@@ -43,12 +43,14 @@ public class VendaController {
     @ApiOperation(value = "Insere forma de pagamento venda")
     @RequestMapping(method = RequestMethod.POST, value = "/paymentoInsert")
     public ResponseEntity<?> inserePagamento(@RequestBody Payment payment){
+
         try {
             boolean inseriu = VendaDAO.insertPayment(payment);
 
             if (inseriu) {
                 String numPedido = VendaDAO.numPedido(payment.get_idVendaFk());
-                return ResponseEntity.ok(new PagamentoResponse(200, "Pagamento inserido ok", payment.get_idVendaFk(),numPedido));
+                Payment pagamento = VendaDAO.formaPagamento(payment.get_idVendaFk());
+                return ResponseEntity.ok(new PagamentoResponse(200, "Pagamento inserido ok", payment.get_idVendaFk(),numPedido,pagamento));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new VendaResponse(500,"Erro para inserir pagamento", 0));
             }
@@ -58,5 +60,7 @@ public class VendaController {
         }
 
     }
+
+
 
 }

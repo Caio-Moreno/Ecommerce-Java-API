@@ -54,12 +54,12 @@ public class EnderecoDAO {
     }
 
     public static boolean atualizaStatus(int id, String status ) throws IOException {
-        String sqlFaturamento = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'F';";// SE VIR 'F' RODA ESSE
-        String sqlFaturamento2 = " UPDATE cliente_endereco SET TIPO = 'E' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'F' RODA ESSE
-        String sqlEntrega = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'E';";// SE VIR 'E' RODA ESSE
-        String sqlEntrega2 = " UPDATE cliente_endereco SET TIPO = 'F' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'E' RODA ESSE
-        String sql = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID_CLIENTE_FK = ?;";// SE VIR * RODA ESSE
-        String sqlBusca = "SELECT  1 as existe FROM cliente_endereco WHERE ID_CLIENTE_FK = ?;";
+        String sqlFaturamento = " UPDATE CLIENTE_ENDERECO SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'F';";// SE VIR 'F' RODA ESSE
+        String sqlFaturamento2 = " UPDATE CLIENTE_ENDERECO SET TIPO = 'E' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'F' RODA ESSE
+        String sqlEntrega = " UPDATE CLIENTE_ENDERECO SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'E';";// SE VIR 'E' RODA ESSE
+        String sqlEntrega2 = " UPDATE CLIENTE_ENDERECO SET TIPO = 'F' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'E' RODA ESSE
+        String sql = " UPDATE CLIENTE_ENDERECO SET TIPO = 'I' WHERE ID_CLIENTE_FK = ?;";// SE VIR * RODA ESSE
+        String sqlBusca = "SELECT  1 as existe FROM CLIENTE_ENDERECO WHERE ID_CLIENTE_FK = ?;";
         int temUser = 0;
         try {
             Connection con = ConexaoDb.getConnection();
@@ -105,15 +105,15 @@ public class EnderecoDAO {
     }
 
     public static boolean alterarEndereco(EnderecoAlterar endereco, int fk) throws IOException {
-        String sqlFaturamento = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'F';";// SE VIR 'F' RODA ESSE
-        String sqlFaturamento2 = " UPDATE cliente_endereco SET TIPO = 'E' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'F' RODA ESSE
-        String sqlEntrega = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'E';";// SE VIR 'E' RODA ESSE
-        String sqlEntrega2 = " UPDATE cliente_endereco SET TIPO = 'F' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'E' RODA ESSE
-        String sql = " UPDATE cliente_endereco SET TIPO = 'I' WHERE ID_CLIENTE_FK = ?;";// SE VIR * RODA ESSE
-        String sqlAltera = "  UPDATE cliente_endereco " +
+        String sqlFaturamento = " UPDATE CLIENTE_ENDERECO SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'F';";// SE VIR 'F' RODA ESSE
+        String sqlFaturamento2 = " UPDATE CLIENTE_ENDERECO SET TIPO = 'E' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'F' RODA ESSE
+        String sqlEntrega = " UPDATE CLIENTE_ENDERECO SET TIPO = 'I' WHERE ID_CLIENTE_FK = ? AND TIPO = 'E';";// SE VIR 'E' RODA ESSE
+        String sqlEntrega2 = " UPDATE CLIENTE_ENDERECO SET TIPO = 'F' WHERE ID_CLIENTE_FK = ? AND TIPO = '*';";// SE VIR 'E' RODA ESSE
+        String sql = " UPDATE CLIENTE_ENDERECO SET TIPO = 'I' WHERE ID_CLIENTE_FK = ?;";// SE VIR * RODA ESSE
+        String sqlAltera = "  UPDATE CLIENTE_ENDERECO " +
                 "SET TIPO = ?, CEP = ?, LOGRADOURO = ?, BAIRRO = ?, NUMERO = ?, COMPLEMENTO = ?, CIDADE = ?, ESTADO = ?" +
                 "  WHERE ID = ?;";
-        String sqlBusca  = "SELECT  1 as existe FROM cliente_endereco WHERE ID_CLIENTE_FK = ? AND ID = ?;";
+        String sqlBusca  = "SELECT  1 as existe FROM CLIENTE_ENDERECO WHERE ID_CLIENTE_FK = ? AND ID = ?;";
         int temUser = 0;
         var tipoEndereco = endereco.get_tipo();
         try {
@@ -186,8 +186,8 @@ public class EnderecoDAO {
     }
 
     public static boolean inativarEndereco(int id , String tipoEndereco) throws IOException {
-        String sql = " UPDATE cliente_endereco SET TIPO = ? WHERE ID = ?;";
-        String sqlBusca = "SELECT  1 as existe,TIPO FROM cliente_endereco WHERE ID =  ?;";
+        String sql = " UPDATE CLIENTE_ENDERECO SET TIPO = ? WHERE ID = ?;";
+        String sqlBusca = "SELECT  1 as existe,TIPO FROM CLIENTE_ENDERECO WHERE ID =  ?;";
         int temUser = 0;
         String tipo = null;
         try {
@@ -256,10 +256,48 @@ public class EnderecoDAO {
         return listaClientes;
     }
 
+    public static List<EnderecoAlterar> listarEnderecosPorIdAtivo (int id) throws  IOException{
+        List<EnderecoAlterar> listaClientes = new ArrayList<>();
+        gravaLog("Consulta cliente","ClienteDAO", Level.INFO);
+
+        String sqlConsulta = "SELECT * FROM CLIENTE_ENDERECO WHERE ID_CLIENTE_FK = ? AND TIPO != 'I' ;";
+
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            System.out.println(ps);
+
+            while(rs.next()) {
+                var endereco = EnderecoAlterar.builder()
+                        ._cep(rs.getString("CEP"))
+                        ._logradouro( rs.getString("LOGRADOURO"))
+                        ._bairro( rs.getString("BAIRRO"))
+                        ._numero( rs.getInt("NUMERO"))
+                        ._complemento( rs.getString("COMPLEMENTO"))
+                        ._cidade( rs.getString("CIDADE"))
+                        ._estado( rs.getString("ESTADO"))
+                        ._tipo( rs.getString("TIPO"))
+                        ._id( rs.getInt("ID"))
+                        .build();
+
+                listaClientes.add(endereco);
+
+            }
+
+        } catch (SQLException | IOException e) {
+
+            gravaLog("Erro de SQL Exception-->"+e.getMessage(), "ClienteDAO", Level.WARNING);
+        }
+        return listaClientes;
+    }
+
 
     public static EnderecoAlterar buscarEnderecosPorId(int id) {
 
-        String sql = "select * from cliente_endereco where id = ?";
+        String sql = "select * from CLIENTE_ENDERECO where id = ?";
         EnderecoAlterar enderecoAlter = null;
         try{
             Connection con = ConexaoDb.getConnection();

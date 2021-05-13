@@ -6,6 +6,7 @@ import br.com.brazukas.Models.Venda;
 import br.com.brazukas.Models.VendaHasProduto;
 import br.com.brazukas.Util.ConexaoDb;
 import br.com.brazukas.Util.Utils;
+import jdk.jshell.execution.Util;
 
 import java.io.IOException;
 import java.sql.*;
@@ -168,5 +169,47 @@ public class VendaDAO {
         }
 
         return "";
+    }
+
+    public static Payment formaPagamento(int idVenda){
+        Payment payment;
+                String sql = "SELECT * FROM BRAZUKAS.CLIENTE_PAGAMENTO where ID_VENDA_FK = ?;";
+        try{
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,idVenda);
+
+            ResultSet rs = ps.executeQuery();
+
+            rs.next();
+            int i = 1;
+
+
+             payment = new Payment(
+                    rs.getInt(i++),
+                    rs.getString(i++),
+                    rs.getString(i++),
+                    rs.getInt(i++),
+                    rs.getDouble(i++),
+                    rs.getInt(i++),
+                    rs.getString(i++),
+                    rs.getString(i++),
+                    rs.getString(i++),
+                    rs.getString(i++),
+                    rs.getString(i++),
+                    rs.getString(i++)
+            );
+             Utils.printarNaTela("MEU PAGAMENTO -->>>");
+            System.out.println(payment);
+
+            return  payment;
+
+
+
+
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+        }
+        return null;
     }
 }

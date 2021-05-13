@@ -17,8 +17,8 @@ public class Payment {
     private int _qtdParcelas;
     private String _paypalEmail;
     private String _paypalCpf;
+    private String _numBoleto;
     private String _mpEmail;
     private String _mpCpf;
-    private String _numBoleto;
     private String _tipo;
 }

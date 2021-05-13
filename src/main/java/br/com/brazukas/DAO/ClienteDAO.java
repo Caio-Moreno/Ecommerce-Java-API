@@ -220,6 +220,61 @@ public class ClienteDAO {
 		return cliente;
 	}
 
+	public static Cliente getClienteAtivo(int id) throws IOException {
+		Utils.printarNaTela("Entrei");
+		Cliente cliente = null;
+		List<EnderecoAlterar> listaEndereco = new ArrayList<>();
+		String sqlConsulta = "SELECT a.ID, a.NOME, a.CPF, a.SEXO, a.DATANASCIMENTO, a.EMAIL\n" +
+				", c.TELEFONE\n" +
+				"FROM USUARIO a\n" +
+				"INNER JOIN CLIENTE_TELEFONE c ON a.ID = c.ID_CLIENTE_FK\n" +
+				"WHERE 1=1 \n" +
+				"AND a.ID = ?;";
+		Utils.printarNaTela("Entrei");
+		int idCliente =0;
+		String nome = "";
+		String cpf = "";
+		String sexo = "";
+		String datanascimento = "";
+		String email = "";
+		String telefone = "";
+
+
+
+
+
+		try {
+			Connection con = ConexaoDb.getConnection();
+			PreparedStatement ps = con.prepareStatement(sqlConsulta);
+
+			Utils.printarNaTela("Entrei");
+
+			ps.setInt(1, id);
+			Utils.printarMinhaConsulta(ps);
+			ResultSet rs = ps.executeQuery();
+
+			while(rs.next()) {
+				idCliente = rs.getInt("ID");
+				nome = rs.getString("NOME");
+				cpf = rs.getString("CPF");
+				sexo = rs.getString("SEXO");
+				datanascimento = rs.getString("DATANASCIMENTO");
+				email = rs.getString("EMAIL");
+				telefone = rs.getString("TELEFONE");
+
+
+			}
+			listaEndereco = EnderecoDAO.listarEnderecosPorIdAtivo(idCliente);
+			cliente = new Cliente (idCliente,nome,email,cpf,datanascimento,"",sexo,telefone,listaEndereco);
+
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+			System.out.println("Erro para buscar dados do cliente");
+		}
+
+		return cliente;
+	}
+
 	public static boolean clienteExite(int id) throws IOException {
 
 		Utils.printarNaTela("Consulta cliente por id" + id);

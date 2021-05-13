@@ -20,4 +20,5 @@ public class Payment {
     private String _mpEmail;
     private String _mpCpf;
     private String _numBoleto;
+    private String _tipo;
 }

@@ -80,8 +80,10 @@ public class VendaDAO {
         return venda;
     }
 
-    public static int inserirVenda(VendaHasProduto venda) {
-        String sqlInsert = "INSERT INTO VENDA(ID, DATA_VENDA, COD_CLIENTE, QUANTIDADE,VALOR_TOTAL, STATUS) VALUES(DEFAULT, curdate(),?,?,?,?);";
+    public static int inserirVenda(VendaHasProduto venda,String numPedido) {
+
+
+        String sqlInsert = "INSERT INTO VENDA(ID, DATA_VENDA, COD_CLIENTE, QUANTIDADE,VALOR_TOTAL, STATUS, NUM_PEDIDO) VALUES(DEFAULT, curdate(),?,?,?,?,?);";
         int id = 0;
         try {
             Connection con = ConexaoDb.getConnection();
@@ -90,6 +92,7 @@ public class VendaDAO {
             ps.setInt(2,venda.getVenda().get_quantidade());
             ps.setDouble(3,venda.getVenda().get_valorTotal());
             ps.setString(4,"PENDING PAYMENT");
+            ps.setString(5,numPedido);
 
 
             ps.executeUpdate();
@@ -114,11 +117,15 @@ public class VendaDAO {
             Utils.printarErro("erro"+e.getMessage());
             id = 0;
         }
+
+
+
+
         return id;
     }
 
     public static boolean insertPayment(Payment payment) {
-        String query ="INSERT INTO CLIENTE_PAGAMENTO(ID,NAME_CART,NUMBER_CART,ID_VENDA_FK,VALOR,QTD_PARCELAS,PAYPAL_EMAIL,PAYPAL_CPF,NUM_BOLETO,MP_EMAIL,MP_CPF) VALUES (DEFAULT, ?,?, ?,?, ?,?, ?,?, ?,?)";
+        String query ="INSERT INTO CLIENTE_PAGAMENTO(ID,NAME_CART,NUMBER_CART,ID_VENDA_FK,VALOR,QTD_PARCELAS,PAYPAL_EMAIL,PAYPAL_CPF,NUM_BOLETO,MP_EMAIL,MP_CPF, TIPO) VALUES (DEFAULT, ?,?, ?,?, ?,?, ?,?, ?,?,?)";
         try {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(query);
@@ -133,11 +140,33 @@ public class VendaDAO {
             ps.setString(i++,payment.get_numBoleto());
             ps.setString(i++,payment.get_mpEmail());
             ps.setString(i++,payment.get_mpCpf());
+            ps.setString(i++,payment.get_tipo());
             ps.executeUpdate();
             return true;
         }catch (Exception e){
             Utils.printarErro("Erro"+e.getMessage());
         }
         return false;
+    }
+
+    public static String numPedido(int idVenda){
+        String sql = "select NUM_PEDIDO from VENDA where ID = ?";
+        try{
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1,idVenda);
+
+            ResultSet rs = ps.executeQuery();
+
+            rs.next();
+
+            return  rs.getString("NUM_PEDIDO");
+
+
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+        }
+
+        return "";
     }
 }

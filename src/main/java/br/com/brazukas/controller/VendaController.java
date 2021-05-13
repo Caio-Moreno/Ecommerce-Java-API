@@ -4,6 +4,7 @@ package br.com.brazukas.controller;
 import br.com.brazukas.DAO.VendaDAO;
 import br.com.brazukas.Models.Payment;
 import br.com.brazukas.Models.Responses.ErrorResponse;
+import br.com.brazukas.Models.Responses.PagamentoResponse;
 import br.com.brazukas.Models.Responses.VendaResponse;
 import br.com.brazukas.Models.Venda;
 import br.com.brazukas.Models.VendaHasProduto;
@@ -26,7 +27,7 @@ public class VendaController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> inserirVenda(@RequestBody VendaHasProduto venda){
         try {
-            int id = VendaDAO.inserirVenda(venda);
+            int id = VendaDAO.inserirVenda(venda, Utils.gerarNumPedido());
 
             if (id > 0) {
                 return ResponseEntity.ok(new VendaResponse(200, "Venda inserida com sucesso", id));
@@ -46,7 +47,8 @@ public class VendaController {
             boolean inseriu = VendaDAO.insertPayment(payment);
 
             if (inseriu) {
-                return ResponseEntity.ok(new VendaResponse(200, "pagamento inserido", payment.get_idVendaFk()));
+                String numPedido = VendaDAO.numPedido(payment.get_idVendaFk());
+                return ResponseEntity.ok(new PagamentoResponse(200, "Pagamento inserido ok", payment.get_idVendaFk(),numPedido));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new VendaResponse(500,"Erro para inserir pagamento", 0));
             }

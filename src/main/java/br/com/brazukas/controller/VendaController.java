@@ -61,6 +61,21 @@ public class VendaController {
 
     }
 
+    @ApiOperation(value = "Consulta forma de pagamento")
+    @RequestMapping(method = RequestMethod.GET, value = "/getPayment")
+    public ResponseEntity<?> consultaPagamento(int idVenda){
+
+        try {
+                Payment pagamento = VendaDAO.formaPagamento(idVenda);
+                return ResponseEntity.ok(new PagamentoResponse(200, "Ok", idVenda,"",pagamento));
+
+        }catch (Exception e){
+            Utils.printarErro("erro"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "Error"+e.getMessage()));
+        }
+
+    }
+
 
 
 }

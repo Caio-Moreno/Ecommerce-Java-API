@@ -19,10 +19,11 @@ public class PedidosDAO {
 
         List<Pedido> lista = new ArrayList<>();
 
-        String sql = "SELECT ID, DATA_VENDA, VALOR_TOTAL, STATUS  FROM BRAZUKAS.VENDA a\n" +
-                "INNER JOIN VENDA_HAS_PRODUTO b on a.ID = b.ID_VENDA_FK\n" +
-                "WHERE a.COD_CLIENTE = ?\n" +
-                "GROUP BY a.ID;";
+        String sql = "SELECT a.ID, DATA_VENDA, VALOR_TOTAL, STATUS, c.TIPO  FROM BRAZUKAS.VENDA a\n" +
+                "                INNER JOIN VENDA_HAS_PRODUTO b on a.ID = b.ID_VENDA_FK\n" +
+                "                INNER JOIN CLIENTE_PAGAMENTO c on a.ID = c.ID_VENDA_FK\n" +
+                "                WHERE a.COD_CLIENTE = ?\n" +
+                "                GROUP BY a.ID,c.TIPO;";
 
         try{
             Connection con = ConexaoDb.getConnection();
@@ -36,7 +37,7 @@ public class PedidosDAO {
             while(rs.next()){
                 int i = 1;
 
-                lista.add(new Pedido(rs.getInt(i++), rs.getString(i++), rs.getDouble(i++), rs.getString(i++)));
+                lista.add(new Pedido(rs.getInt(i++), rs.getString(i++), rs.getDouble(i++), rs.getString(i++), rs.getString(i++)));
             }
 
             return  lista;

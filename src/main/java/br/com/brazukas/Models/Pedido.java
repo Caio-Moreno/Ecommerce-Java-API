@@ -13,4 +13,5 @@ public class Pedido {
     private String _dataVenda;
     private double _valorTotal;
     private String _status;
+    private String _tipo;
 }

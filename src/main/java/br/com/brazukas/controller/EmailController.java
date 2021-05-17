@@ -51,11 +51,6 @@ public class EmailController {
     @RequestMapping(method = RequestMethod.POST, value = "/order")
     public ResponseEntity<?> sendMailOrder(String email, String numPedido, String name) {
         try {
-
-
-
-
-
                 MimeMessage mail = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(mail);
                 helper.setTo(email);

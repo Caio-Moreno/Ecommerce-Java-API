@@ -1,25 +1,80 @@
 package br.com.brazukas.DAO;
 
-import br.com.brazukas.Models.Frete;
-import br.com.brazukas.Models.Pedido;
-import br.com.brazukas.Models.VendaHasProduto;
-import br.com.brazukas.Models.VendaHasProdutoJoin;
-import br.com.brazukas.Util.ConexaoDb;
-import br.com.brazukas.Util.Utils;
+import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+
+import br.com.brazukas.Models.Pedido;
+import br.com.brazukas.Models.VendaHasProdutoJoin;
+import br.com.brazukas.Util.ConexaoDb;
+import br.com.brazukas.Util.Utils;
+import br.com.brazukas.controller.Dto.PedidoDto;
 
 public class PedidosDAO {
 
+	public static List<PedidoDto> consultarPedidoGeral() throws SQLException, IOException {
+        List<PedidoDto> listaPedidos = new ArrayList<>();
+        int i = 1;
+        boolean jaExiste = false;
+        String sqlConsulta = "SELECT ID, DATA_VENDA, VALOR_TOTAL, STATUS, NUM_PEDIDO FROM VENDA;";
+
+        try {
+
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            ResultSet rs = ps.executeQuery();
+
+            gravaLog("Consulta Pedido" + ps, "PedidoDAO", Level.INFO);
+
+            while (rs.next()) {
+                int idVenda = rs.getInt("ID");
+                String dataVenda = rs.getString("DATA_VENDA");
+                double descricao = rs.getDouble("VALOR_TOTAL");
+                String qualidade = rs.getString("STATUS");
+                String categoria = rs.getString("NUM_PEDIDO");
+             
+                System.out.println("CODIGO RETORNADO DA PASSAGEM --->"+i+"----"+idVenda);
+
+
+                if(i == 1) {
+                    System.out.println("PASSEI PRIMEIRA VEZ"+idVenda);
+                    listaPedidos.add(new PedidoDto(idVenda,dataVenda,descricao,qualidade,categoria));
+                }else {
+                    for (PedidoDto pedido : listaPedidos) {
+                        if ((pedido.get_idVenda() == idVenda)) {
+                            System.out.println("Pedido já existe"+pedido.get_idVenda());
+                            jaExiste = true;
+                            break;
+                        }else{
+                            jaExiste = false;
+                        }
+                    }
+                    if(!jaExiste){
+                        listaPedidos.add(new PedidoDto(idVenda,dataVenda,descricao,qualidade,categoria));
+                    }
+                }
+
+                i++;
+            }
+
+        } catch (SQLException | IOException e) {
+            gravaLog("Erro de SQL Exception-->" + e.getMessage(), "PedidoDAO", Level.WARNING);
+        }
+        return listaPedidos;
+    }
+	
     public static List<Pedido> getPedidos(int idCliente) {
 
         List<Pedido> lista = new ArrayList<>();
 
-        String sql = "SELECT a.ID, DATA_VENDA, VALOR_TOTAL, STATUS, c.TIPO  FROM BRAZUKAS.VENDA a\n" +
+        String sql = "SELECT a.NUM_PEDIDO, a.ID, DATA_VENDA, VALOR_TOTAL, STATUS, c.TIPO  FROM BRAZUKAS.VENDA a\n" +
                 "                INNER JOIN VENDA_HAS_PRODUTO b on a.ID = b.ID_VENDA_FK\n" +
                 "                INNER JOIN CLIENTE_PAGAMENTO c on a.ID = c.ID_VENDA_FK\n" +
                 "                WHERE a.COD_CLIENTE = ?\n" +
@@ -37,7 +92,7 @@ public class PedidosDAO {
             while(rs.next()){
                 int i = 1;
 
-                lista.add(new Pedido(rs.getInt(i++), rs.getString(i++), rs.getDouble(i++), rs.getString(i++), rs.getString(i++)));
+                lista.add(new Pedido(rs.getString(i++),rs.getInt(i++), rs.getString(i++), rs.getDouble(i++), rs.getString(i++), rs.getString(i++)));
             }
 
             return  lista;

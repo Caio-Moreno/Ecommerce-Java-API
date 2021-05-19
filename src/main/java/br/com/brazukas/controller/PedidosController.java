@@ -3,11 +3,15 @@ package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.PedidosDAO;
 import br.com.brazukas.DAO.ProdutoDAO;
+import br.com.brazukas.DAO.UsuarioInternoDAO;
+import br.com.brazukas.Models.PedidoAtualizar;
 import br.com.brazukas.Models.ProdutoAtualizar;
+import br.com.brazukas.Models.UserAtualizar;
 import br.com.brazukas.Models.Responses.PedidoResponse;
 import br.com.brazukas.Models.Responses.PedidoResponseDto;
 import br.com.brazukas.Models.Responses.ProdutoResponseDto;
 import br.com.brazukas.Models.Responses.TokenResponse;
+import br.com.brazukas.Models.Responses.UserAdminOrEstoquistaResponse;
 import br.com.brazukas.Models.Responses.VendaHasProdutoJoinResponse;
 import br.com.brazukas.controller.Dto.PedidoDto;
 import br.com.brazukas.controller.Dto.ProdutoDto;
@@ -52,5 +56,19 @@ public class PedidosController {
         var pedidos = PedidosDAO.getPedidosProdutos(idVenda);
 
         return ResponseEntity.ok(new VendaHasProdutoJoinResponse(200, pedidos.size()+" produtos encontrados", pedidos));
+    }
+    
+    @ApiOperation(value = "Atualiza o status do Pedido")
+    @RequestMapping(method = RequestMethod.PUT,value = "/atualizaStatusPedido")
+    public PedidoResponseDto atualizaStatusPedido(@RequestBody PedidoAtualizar pedido) throws IOException{
+
+        boolean atualizou = PedidosDAO.atualizaStatusPedido(pedido.get_idVenda(), pedido.get_status());
+
+        if(atualizou){
+            return new PedidoResponseDto(200, "Atualizado com sucesso!", null);
+        }else{
+            return new PedidoResponseDto(500, "Erro para atualizar o status", null);
+        }
+
     }
 }

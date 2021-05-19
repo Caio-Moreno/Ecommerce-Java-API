@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.amazonaws.services.kms.model.NotFoundException;
+
 import br.com.brazukas.Models.Pedido;
 import br.com.brazukas.Models.VendaHasProdutoJoin;
 import br.com.brazukas.Util.ConexaoDb;
@@ -19,6 +21,36 @@ import br.com.brazukas.controller.Dto.PedidoDto;
 
 public class PedidosDAO {
 
+	
+	public static boolean atualizaStatusPedido(int id, String status) throws IOException {
+        String sql = "UPDATE VENDA SET STATUS = ? WHERE ID = ?";
+        String sqlBusca = "SELECT  1 as existe FROM VENDA WHERE ID = ?;";
+        int temUser = 0;
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps2 = con.prepareStatement(sqlBusca);
+            ps2.setInt(1, id);
+            var rs = ps2.executeQuery();
+            if (rs != null && rs.next()) {
+                temUser = rs.getInt("existe");
+            }
+
+            if (temUser != 1) {
+                throw new NotFoundException("Não existe Venda com este ID.");
+            }
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, status);
+            ps.setInt(2, id);
+            System.out.println(ps);
+            ps.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Erro"+e.getMessage());
+            gravaLog("ERRO PARA ATUALIZAR STATUS" + e.getMessage(), "PEDIDODAO", Level.SEVERE);
+        }
+        return false;
+    }
+	
 	public static List<PedidoDto> consultarPedidoGeral() throws SQLException, IOException {
         List<PedidoDto> listaPedidos = new ArrayList<>();
         int i = 1;

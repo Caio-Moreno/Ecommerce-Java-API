@@ -81,6 +81,69 @@ public class ProdutoDAO {
         return listaProdutos;
     }
 
+    public static List<ProdutoDto> consultarProdutoLoja() throws SQLException, IOException {
+        int i = 1;
+        boolean jaExiste = false;
+        List<ProdutoDto> listaProdutos = new ArrayList<>();
+
+
+        String sqlConsulta = "SELECT prod.ID as ID, NOME, DESCRICAO, QUALIDADE, CATEGORIA, STATUS, PRECO,img.CAMINHO, PLATAFORMA,QUANTIDADE\n" +
+                "FROM PRODUTO prod\n" +
+                "INNER JOIN ESTOQUE est ON prod.ID = est.ID_PRODUTO_FK\n" +
+                "LEFT JOIN IMAGENS img  ON prod.ID = img.ID_PRODUTO_FK\n" +
+                "WHERE STATUS = 'A' AND QUANTIDADE > 0;";
+
+        try {
+
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sqlConsulta);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int codProduto = rs.getInt("ID");
+                String nome = rs.getString("NOME");
+                String descricao = rs.getString("DESCRICAO");
+                double qualidade = rs.getDouble("QUALIDADE");
+                String categoria = rs.getString("CATEGORIA");
+                String statusProduto = rs.getString("STATUS");
+                double preco = rs.getDouble("PRECO");
+                String caminho = rs.getString("CAMINHO");
+                String plataforma = rs.getString("PLATAFORMA");
+                int qtdEstoque = rs.getInt("QUANTIDADE");
+
+
+
+
+                if(i == 1) {
+
+                    listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
+                }else {
+                    for (ProdutoDto prod : listaProdutos) {
+                        if ((prod.get_idProduto() == codProduto)) {
+
+                            jaExiste = true;
+                            break;
+                        }else{
+                            jaExiste = false;
+                        }
+                    }
+
+                    if(!jaExiste){
+
+                        listaProdutos.add(new ProdutoDto(codProduto, nome, descricao, qualidade, categoria, statusProduto, qtdEstoque, preco, caminho, plataforma));
+                    }
+                }
+
+                i++;
+            }
+
+        } catch (SQLException | IOException e) {
+            gravaLog("Erro de SQL Exception-->" + e.getMessage(), "ProdutoDAO", Level.WARNING);
+        }
+        return listaProdutos;
+    }
+
     public static List<Produto> consultaProdutoPorNome(String nomeProduto) throws IOException {
         List<Produto> listaProdutos = new ArrayList<>();
 

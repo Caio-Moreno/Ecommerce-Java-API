@@ -32,6 +32,17 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(new ProdutoResponseDto(200, listaProd.size() + " Produtos encontrados", listaProd));
     }
 
+    @ApiOperation(value = "Retorna uma lista de produtos")
+    @RequestMapping(method = RequestMethod.GET, value = "/Loja")
+    public ResponseEntity<ProdutoResponseDto> ListaTodosProdutosLoja() throws IOException, SQLException {
+        List<ProdutoDto> listaProd = ProdutoDAO.consultarProdutoLoja();
+
+        if (listaProd == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProdutoResponseDto(404, "Nennhum produto encontrado", null));
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ProdutoResponseDto(200, listaProd.size() + " Produtos encontrados", listaProd));
+    }
+
     @ApiOperation(value = "Retorna uma lista de produtos geral")
     @RequestMapping(params = {"status"}, method = RequestMethod.GET)
     public ResponseEntity<ProdutoResponseDto> ListaTodosProdutosGeral(String status) throws IOException, SQLException {

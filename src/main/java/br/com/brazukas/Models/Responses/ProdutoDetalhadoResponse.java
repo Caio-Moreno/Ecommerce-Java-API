@@ -15,7 +15,7 @@ import java.util.List;
 public class ProdutoDetalhadoResponse {
     private int _codigo;
     private String _message;
-    private List<VendaHasProdutoJoin> produtos;
+    private List<VendaHasProdutoJoin> _produtos;
     private Payment _pagamento;
     private Endereco _endereco;
 

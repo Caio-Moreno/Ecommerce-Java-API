@@ -15,6 +15,4 @@ public class Pedido {
     private double _valorTotal;
     private String _status;
     private int _idEntrega;
-    Payment pagamento;
-    Endereco endereco;
 }

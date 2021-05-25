@@ -131,9 +131,6 @@ public class PedidosDAO {
 
 
 
-               Payment pagamento =  VendaDAO.formaPagamento(idVenda);
-               Endereco endereco = PedidosDAO.getEnderecoEntrega(idEntrega, idCliente);
-
                 var pedido = Pedido.builder()
                         ._numPedido(num_pedido)
                         ._idVenda(idVenda)
@@ -141,8 +138,6 @@ public class PedidosDAO {
                         ._valorTotal(valor)
                         ._status(status)
                         ._idEntrega(idEntrega)
-                        .pagamento(pagamento)
-                        .endereco(endereco)
                         .build();
 
                 lista.add(pedido);

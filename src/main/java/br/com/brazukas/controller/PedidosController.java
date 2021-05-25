@@ -2,19 +2,17 @@ package br.com.brazukas.controller;
 
 
 import br.com.brazukas.DAO.PedidosDAO;
-import br.com.brazukas.DAO.ProdutoDAO;
-import br.com.brazukas.DAO.UsuarioInternoDAO;
-import br.com.brazukas.Models.PedidoAtualizar;
-import br.com.brazukas.Models.ProdutoAtualizar;
-import br.com.brazukas.Models.UserAtualizar;
+
+import br.com.brazukas.DAO.VendaDAO;
+import br.com.brazukas.Models.*;
 import br.com.brazukas.Models.Responses.PedidoResponse;
 import br.com.brazukas.Models.Responses.PedidoResponseDto;
-import br.com.brazukas.Models.Responses.ProdutoResponseDto;
-import br.com.brazukas.Models.Responses.TokenResponse;
-import br.com.brazukas.Models.Responses.UserAdminOrEstoquistaResponse;
+
+import br.com.brazukas.Models.Responses.ProdutoDetalhadoResponse;
 import br.com.brazukas.Models.Responses.VendaHasProdutoJoinResponse;
+
 import br.com.brazukas.controller.Dto.PedidoDto;
-import br.com.brazukas.controller.Dto.ProdutoDto;
+
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +41,9 @@ public class PedidosController {
     @ApiOperation(value = "Lista pedidos")
     @RequestMapping(method = RequestMethod.GET, value = "/getPedidos")
     public ResponseEntity<?> getPedidos(int idCliente) throws IOException {
+            List<Pedido> pedidos = PedidosDAO.getPedidos(idCliente);
 
-        var pedidos = PedidosDAO.getPedidos(idCliente);
-
-        return ResponseEntity.ok(new PedidoResponse(200, pedidos.size()+" pedidos encontrados", pedidos));
+        return ResponseEntity.ok(new PedidoResponse(200, pedidos.size() +" pedidos encontrados", pedidos));
     }
 
     @ApiOperation(value = "Lista pedidos detalhados")
@@ -55,7 +52,14 @@ public class PedidosController {
 
         var pedidos = PedidosDAO.getPedidosProdutos(idVenda);
 
-        return ResponseEntity.ok(new VendaHasProdutoJoinResponse(200, pedidos.size()+" produtos encontrados", pedidos));
+        Payment pagamento =  VendaDAO.formaPagamento(idVenda);
+        String dados = PedidosDAO.retonaIdEntregaECliente(idVenda);
+        String [] dadosSplitado = dados.split(","); //posicao 0 igual idEntrega e posicao igual idCliente
+
+        Endereco endereco = PedidosDAO.getEnderecoEntrega(Integer.parseInt(dadosSplitado[0]),Integer.parseInt(dadosSplitado[1]));
+
+
+        return ResponseEntity.ok(new ProdutoDetalhadoResponse(200, pedidos.size()+" produtos encontrados", pedidos, pagamento,endereco));
     }
     
     @ApiOperation(value = "Atualiza o status do Pedido")

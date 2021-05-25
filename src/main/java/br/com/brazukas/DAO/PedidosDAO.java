@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import br.com.brazukas.Models.*;
 import com.amazonaws.services.kms.model.NotFoundException;
 
-import br.com.brazukas.Models.Pedido;
-import br.com.brazukas.Models.VendaHasProdutoJoin;
 import br.com.brazukas.Util.ConexaoDb;
 import br.com.brazukas.Util.Utils;
 import br.com.brazukas.controller.Dto.PedidoDto;
@@ -106,7 +105,7 @@ public class PedidosDAO {
 
         List<Pedido> lista = new ArrayList<>();
 
-        String sql = "SELECT a.NUM_PEDIDO, a.ID, DATA_VENDA, VALOR_TOTAL, STATUS, c.TIPO  FROM BRAZUKAS.VENDA a\n" +
+        String sql = "SELECT a.NUM_PEDIDO, a.ID, DATA_VENDA, VALOR_TOTAL, STATUS, c.TIPO,a.ID_ENTREGA  FROM BRAZUKAS.VENDA a\n" +
                 "                INNER JOIN VENDA_HAS_PRODUTO b on a.ID = b.ID_VENDA_FK\n" +
                 "                INNER JOIN CLIENTE_PAGAMENTO c on a.ID = c.ID_VENDA_FK\n" +
                 "                WHERE a.COD_CLIENTE = ?\n" +
@@ -122,9 +121,31 @@ public class PedidosDAO {
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
-                int i = 1;
+                String num_pedido = rs.getString("NUM_PEDIDO");
+                int idVenda = rs.getInt("ID");
+                String data = rs.getString("DATA_VENDA");
+                double valor = rs.getDouble("VALOR_TOTAL");
+                String status = rs.getString("STATUS");
+                int idEntrega = rs.getInt("ID_ENTREGA");
 
-                lista.add(new Pedido(rs.getString(i++),rs.getInt(i++), rs.getString(i++), rs.getDouble(i++), rs.getString(i++), rs.getString(i++)));
+
+
+
+               Payment pagamento =  VendaDAO.formaPagamento(idVenda);
+               Endereco endereco = PedidosDAO.getEnderecoEntrega(idEntrega, idCliente);
+
+                var pedido = Pedido.builder()
+                        ._numPedido(num_pedido)
+                        ._idVenda(idVenda)
+                        ._dataVenda(data)
+                        ._valorTotal(valor)
+                        ._status(status)
+                        ._idEntrega(idEntrega)
+                        .pagamento(pagamento)
+                        .endereco(endereco)
+                        .build();
+
+                lista.add(pedido);
             }
 
             return  lista;
@@ -147,10 +168,15 @@ public class PedidosDAO {
             Connection con = ConexaoDb.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1,idVenda);
-
             Utils.printarMinhaConsulta(ps);
 
             ResultSet rs = ps.executeQuery();
+
+            Payment pagamento =  VendaDAO.formaPagamento(idVenda);
+            String dados = retonaIdEntregaECliente(idVenda);
+            String [] dadosSplitado = dados.split(","); //posicao 0 igual idEntrega e posicao igual idCliente
+
+            Endereco endereco = PedidosDAO.getEnderecoEntrega(Integer.parseInt(dadosSplitado[0]),Integer.parseInt(dadosSplitado[1]));
 
             while(rs.next()){
                 int i = 1;
@@ -166,5 +192,58 @@ public class PedidosDAO {
         return null;
     }
 
+    public static String retonaIdEntregaECliente(int idVenda){
+	    String retorno = ",";
+	    String sql = "SELECT ID_ENTREGA, COD_CLIENTE FROM BRAZUKAS.VENDA\n" +
+                "WHERE ID = ?";
+	    try{
+	        Connection con = ConexaoDb.getConnection();
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setInt(1,idVenda);
+	        ResultSet rs = ps.executeQuery();
 
+	        rs.next();
+
+	        retorno = ""+rs.getInt(1)+","+rs.getInt(2);
+	        Utils.printarNaTela("MEU DADOS -->>"+retorno);
+
+        }catch (Exception e){
+	        Utils.printarErro(e.getMessage());
+        }
+	    return retorno;
+    }
+
+
+    public static Endereco getEnderecoEntrega(int idEntrega, int idCliente) {
+	    Endereco endereco = null;
+
+	    String sql = "SELECT * FROM BRAZUKAS.CLIENTE_ENDERECO \n" +
+                "WHERE 1=1\n" +
+                "AND ID = ? \n" +
+                "AND ID_CLIENTE_FK = ? ;";
+
+	    try{
+	        Connection con = ConexaoDb.getConnection();
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setInt(1,idEntrega);
+	        ps.setInt(2,idCliente);
+
+	        Utils.printarMinhaConsulta(ps);
+	        ResultSet rs = ps.executeQuery();
+
+	        rs.next();
+	        int i = 0;
+	        endereco = new Endereco(rs.getString("CEP")
+                                    , rs.getString("LOGRADOURO")
+                                    , rs.getInt("NUMERO")
+                                    , rs.getString("COMPLEMENTO")
+                                    , rs.getString("BAIRRO")
+                                    , rs.getString("CIDADE")
+                                    , rs.getString("ESTADO")
+                                    , rs.getString("TIPO"));
+        }catch (Exception e) {
+            Utils.printarErro(e.getMessage());
+        }
+	    return endereco;
+    }
 }

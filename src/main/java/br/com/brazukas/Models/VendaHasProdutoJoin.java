@@ -13,4 +13,5 @@ public class VendaHasProdutoJoin {
     private double _valor;
     private int _quantidade;
     private String _nome;
+
 }

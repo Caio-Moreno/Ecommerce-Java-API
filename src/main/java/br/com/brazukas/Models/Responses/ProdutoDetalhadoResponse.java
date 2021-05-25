@@ -1,9 +1,8 @@
 package br.com.brazukas.Models.Responses;
 
-
 import br.com.brazukas.Models.Endereco;
 import br.com.brazukas.Models.Payment;
-import br.com.brazukas.Models.Pedido;
+import br.com.brazukas.Models.VendaHasProdutoJoin;
 import lombok.*;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PedidoResponse {
+public class ProdutoDetalhadoResponse {
     private int _codigo;
     private String _message;
-    private List<Pedido> _pedidos;
+    private List<VendaHasProdutoJoin> produtos;
+    private Payment _pagamento;
+    private Endereco _endereco;
+
 }

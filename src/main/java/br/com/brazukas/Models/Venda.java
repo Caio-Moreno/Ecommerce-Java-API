@@ -14,6 +14,7 @@ public class Venda {
     private int _quantidade;
     private double _valorTotal;
     private String _status;
+    private int _idEndereco;
 
     public Venda(int _idVenda, String _nome,int _quantidade, double _valorTotal, String _dataVenda){
         this._idVenda = _idVenda;

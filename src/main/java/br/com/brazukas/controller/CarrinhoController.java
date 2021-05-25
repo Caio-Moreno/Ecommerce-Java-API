@@ -102,7 +102,7 @@ public class CarrinhoController {
         }
     }
 
-    @ApiOperation(value = "Retorna o carrinho")
+    @ApiOperation(value = "Retorna o carrinho com o cliente deslogado")
     @RequestMapping(params = {"session"},method = RequestMethod.GET, value = "/getCart")
     public CarrinhoResponse consultaCarrinhoDeslogado(String session) throws IOException {
         Utils.printarNaTela("RETORNA CARRINHO");

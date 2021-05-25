@@ -84,7 +84,7 @@ public class VendaDAO {
     public static int inserirVenda(VendaHasProduto venda,String numPedido) {
 
 
-        String sqlInsert = "INSERT INTO VENDA(ID, DATA_VENDA, COD_CLIENTE, QUANTIDADE,VALOR_TOTAL, STATUS, NUM_PEDIDO) VALUES(DEFAULT, curdate(),?,?,?,?,?);";
+        String sqlInsert = "INSERT INTO VENDA(ID, DATA_VENDA, COD_CLIENTE, QUANTIDADE,VALOR_TOTAL, STATUS, NUM_PEDIDO,ID_ENTREGA) VALUES(DEFAULT, curdate(),?,?,?,?,?, ?);";
         int id = 0;
         try {
             Connection con = ConexaoDb.getConnection();
@@ -94,8 +94,9 @@ public class VendaDAO {
             ps.setDouble(3,venda.getVenda().get_valorTotal());
             ps.setString(4,"PENDING PAYMENT");
             ps.setString(5,numPedido);
+            ps.setInt(6, venda.getVenda().get_idEndereco());
 
-
+            Utils.printarMinhaConsulta(ps);
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if(rs.next()){

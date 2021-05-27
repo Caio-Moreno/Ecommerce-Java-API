@@ -1,16 +1,16 @@
 package br.com.brazukas.DAO;
 
-import br.com.brazukas.Models.ProdutoPlataforma;
-import br.com.brazukas.Models.ProdutoStatus;
-import br.com.brazukas.Models.UsuarioCargo;
-import br.com.brazukas.Models.UsuarioStatus;
+import br.com.brazukas.Models.*;
 import br.com.brazukas.Util.ConexaoDb;
 import br.com.brazukas.Util.Utils;
+import jdk.jshell.execution.Util;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import static br.com.brazukas.Util.CriarArquivoDeLog.gravaLog;
@@ -138,5 +138,58 @@ public class DashboardDAO {
             System.out.println("Erro"+e);
         }
         return cargo;
+    }
+
+    public static List<Ganhos> ganhos(String dataIni, String dataFim){
+        String sql = "select DATA_VENDA, SUM(VALOR_TOTAL) as VALOR from VENDA\n" +
+                "WHERE 1=1\n" +
+                "AND DATA_VENDA BETWEEN ? AND ?\n" +
+                "GROUP BY DATA_VENDA\n" +
+                "ORDER BY DATA_VENDA ASC";
+        List<Ganhos> listaGanhos = new ArrayList<>();
+
+        try{
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1,dataIni);
+            ps.setString(2,dataFim);
+            Utils.printarMinhaConsulta(ps);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()){
+
+                listaGanhos.add(new Ganhos(rs.getString(1), rs.getDouble(2)));
+            }
+
+
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage() + " CLASSE DASHBOARD");
+            listaGanhos = null;
+        }
+
+        return listaGanhos;
+    }
+
+    public static List<DashMaisVendidos> maisVendidos() {
+        String sql = "SELECT NOME, SUM(QUANTIDADE) as total FROM VENDA_HAS_PRODUTO A\n" +
+                "INNER JOIN PRODUTO B ON A.ID_PRODUTO_FK = B.ID\n" +
+                "GROUP BY NOME\n" +
+                "LIMIT 5";
+
+        List<DashMaisVendidos> lista = new ArrayList<>();
+
+        try {
+            Connection con = ConexaoDb.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()){
+                lista.add(new DashMaisVendidos(rs.getString(1), rs.getInt(2)));
+            }
+
+        }catch (Exception e){
+            Utils.printarErro(e.getMessage());
+        }
+        return  lista;
     }
 }

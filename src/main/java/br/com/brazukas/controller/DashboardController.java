@@ -3,17 +3,15 @@ package br.com.brazukas.controller;
 
 import br.com.brazukas.DAO.DashboardDAO;
 import br.com.brazukas.DAO.ProdutoDAO;
-import br.com.brazukas.Models.ProdutoPlataforma;
-import br.com.brazukas.Models.ProdutoStatus;
+import br.com.brazukas.Models.*;
 import br.com.brazukas.Models.Responses.*;
-import br.com.brazukas.Models.UsuarioCargo;
-import br.com.brazukas.Models.UsuarioStatus;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -52,6 +50,30 @@ public class DashboardController {
             if(cargo == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UsuarioStatusResponse(404, "Nenhuma informação encontada", null));
             return ResponseEntity.status(HttpStatus.OK).body(new UsuarioCargoResponse(200, "Dados encontrados", cargo));
         }
+
+    }
+    @ApiOperation(value = "Pegar vendas")
+    @RequestMapping(value = "/listaGanhos",method = RequestMethod.GET)
+    public ResponseEntity<?> consultaGanhosPorDia(String dataIni, String dataFim, @RequestHeader("TOKEN") String meuToken){
+        System.out.println(meuToken);
+        if (!TokenController.isValid(meuToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Atualiza status do produto", "/Produtos"));
+
+        List<Ganhos> ganhos = DashboardDAO.ganhos(dataIni,dataFim);
+
+        return ResponseEntity.ok(new GanhosResponse(200, "OK", ganhos));
+
+    }
+    @ApiOperation(value = "Consultar mais vendidos")
+    @RequestMapping(value = "/maisvendidos",method = RequestMethod.GET)
+    public ResponseEntity<?> consultaVendidos( @RequestHeader("TOKEN") String meuToken){
+        System.out.println(meuToken);
+        if (!TokenController.isValid(meuToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenResponse(401, "Token inválido", "Atualiza status do produto", "/Produtos"));
+
+        List<DashMaisVendidos> maisVendidos = DashboardDAO.maisVendidos();
+
+        return ResponseEntity.ok(maisVendidos);
 
     }
 }

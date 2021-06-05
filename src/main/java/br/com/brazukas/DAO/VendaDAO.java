@@ -92,7 +92,7 @@ public class VendaDAO {
             ps.setInt(1,venda.getVenda().get_idCliente());
             ps.setInt(2,venda.getVenda().get_quantidade());
             ps.setDouble(3,venda.getVenda().get_valorTotal());
-            ps.setString(4,"PENDING PAYMENT");
+            ps.setString(4,"PAGAMENTO PENDENTE");
             ps.setString(5,numPedido);
             ps.setInt(6, venda.getVenda().get_idEndereco());
 

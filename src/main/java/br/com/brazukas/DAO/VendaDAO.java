@@ -110,6 +110,7 @@ public class VendaDAO {
                 ps2.setInt(2,prod.get_idProduto());
                 ps2.setDouble(3,prod.get_preco());
                 ps2.setInt(4,prod.get_qtdEstoque());
+                Utils.printarMinhaConsulta(ps2);
                 ps2.executeUpdate();
             }
 

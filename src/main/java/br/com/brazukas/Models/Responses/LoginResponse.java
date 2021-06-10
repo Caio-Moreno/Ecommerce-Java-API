@@ -1,7 +1,6 @@
 package br.com.brazukas.Models.Responses;
 
 import br.com.brazukas.Models.Login;
-import br.com.brazukas.Models.User;
 import lombok.*;
 
 import java.util.List;

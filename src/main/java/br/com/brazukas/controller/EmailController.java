@@ -22,7 +22,7 @@ public class EmailController {
     @Autowired
     private JavaMailSender mailSender;
 
-    @ApiOperation("Envia email de recuperação de senha")
+    @ApiOperation("Envia email com os dados do pedido")
     @RequestMapping(method = RequestMethod.POST, value = "Recovery")
     public ResponseEntity<?> sendMail(@RequestBody Email email) {
         try {

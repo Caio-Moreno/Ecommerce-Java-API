@@ -259,7 +259,7 @@ public class UsuarioInternoDAO {
             return true;
 
         } catch (SQLException e) {
-            gravaLog(e.getMessage(), "UsuarioInternoDAO", Level.SEVERE);
+            System.out.println("Erro"+e.getMessage());
             return false;
         }
     }

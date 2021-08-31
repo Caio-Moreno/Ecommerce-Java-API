@@ -54,7 +54,7 @@ public class PedidosDAO {
         List<PedidoDto> listaPedidos = new ArrayList<>();
         int i = 1;
         boolean jaExiste = false;
-        String sqlConsulta = "SELECT ID, DATA_VENDA, VALOR_TOTAL, STATUS, NUM_PEDIDO FROM VENDA;";
+        String sqlConsulta = "SELECT ID, DATA_VENDA, VALOR_TOTAL, STATUS, NUM_PEDIDO FROM VENDA ORDER BY DATA_VENDA DESC ;";
 
         try {
 

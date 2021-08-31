@@ -22,7 +22,7 @@ public class EmailController {
     @Autowired
     private JavaMailSender mailSender;
 
-    @ApiOperation("Envia email com os dados do pedido")
+    @ApiOperation("Envia email de recuperacao de senha")
     @RequestMapping(method = RequestMethod.POST, value = "Recovery")
     public ResponseEntity<?> sendMail(@RequestBody Email email) {
         try {
@@ -47,7 +47,7 @@ public class EmailController {
         }
     }
 
-    @ApiOperation("Envia email de recuperação de senha")
+    @ApiOperation("Envia email de confirmação de pedido")
     @RequestMapping(method = RequestMethod.POST, value = "/order")
     public ResponseEntity<?> sendMailOrder(String email, String numPedido, String name) {
         try {
@@ -446,13 +446,12 @@ public class EmailController {
                 "          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
                 "            <tr>\n" +
                 "              <td class=\"content-block\">\n" +
-                "                <a ><img src=\"http://imagens-bombapath-games.s3.amazonaws.com/82imagem0.jpg\" alt=\"Brazukas\" align=\"center\" style=\"display:block;float:none;margin:0 auto;max-width:200px;outline:0;\"></a>\n" +
+                "                <a ><img src=\"http://imagens-bombapath-games.s3.amazonaws.com/91imagem0.jpg\" alt=\"Brazukas\" align=\"center\" style=\"display:block;float:none;margin:0 auto;max-width:200px;outline:0;\"></a>\n" +
                 "              </td>\n" +
                 "            </tr>\n" +
                 "          </table>\n" +
                 "        </div>\n" +
                 "        <div class=\"content\">\n" +
-
                 "\n" +
                 "          <!-- START CENTERED WHITE CONTAINER -->\n" +
                 "          <span class=\"preheader\">Sua compra foi efetuada com sucesso!.</span>\n" +

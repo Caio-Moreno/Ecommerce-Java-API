@@ -23,6 +23,7 @@ import java.util.List;
 @RequestMapping("/Clientes")
 public class ClienteController {
 
+
     @ApiOperation(value = "Insere um cliente")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> Post(@RequestBody Cliente cliente) throws IOException, SQLException {
@@ -32,6 +33,7 @@ public class ClienteController {
         //verifico se existe um email já cadastrado
         if (ClienteDAO.ExisteEmail(cliente.get_email()))
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "Email já cadastrado"));
+
         //verifico se existe um cpf já cadastrado
         if (ClienteDAO.ExisteCpf(cliente.get_cpf()))
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(500, "CPF já cadastrado"));
